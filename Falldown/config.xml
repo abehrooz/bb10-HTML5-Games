@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<widget xmlns="http://www.w3.org/ns/widgets"
+		xmlns:rim="http://www.blackberry.com/ns/widgets"
+		id="com.abe.bb.falldown"
+		version="1.0.0">
+
+	<name>Falldown</name>
+	<author>Home</author>
+	<content src="index.html" />
+	<access uri="*" subdomains="true" />
+
+	<!-- PlayBook -->
+	<rim:orientation mode="portrait" />
+
+	<!-- BB10 -->
+	<feature id="blackberry.app.orientation">
+		<param name="mode" value="portrait" />
+	</feature>
+</widget>

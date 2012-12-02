@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" height="40" width="24" tileheight="32" tilewidth="32">
+ <tileset firstgid="1" name="tiles" tileheight="32" tilewidth="32">
+  <image source="../images/tiles.png" height="96" width="96"/>
+ </tileset>
+ <layer name="Layer0" height="40" width="24">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC82W4QrAIAiEC0ax93/h/VkQYnZeIf4QWdvywzvbaimlJo83aWTk2/VvXtPy7p5Hr/6HxSbfYfmQGlYt5JrR3OPjUz7Wj1F8ml4Z+OSaJ2v7IP496d8DBOOLW/7znhPR/oviQ59nZoIJli+Czaq94mC07MX3XbL2WukouRmv3ZirKH2RfTwzdHs2Tvl2urM6nWiJ9CkDX4T/GA/c9KzH0yO3KeZ+NiWQs2VVB82PyBqHxTbelf8g2eMDKoV2CgAPAAA=
+  </data>
+ </layer>
+ <objectgroup name="walls" height="40" width="24">
+  <object y="0" x="766" height="1280" width="2"/>
+  <object y="0" x="0" height="1280" width="2"/>
+  <object y="1278" x="0" height="2" width="768"/>
+ </objectgroup>
+ <objectgroup name="floors" height="40" width="24">
+  <object y="1250" x="2" height="32" width="664"/>
+  <object y="1400" x="102" height="32" width="564"/>
+  <object y="1550" x="2" height="32" width="200"/>
+  <object y="1550" x="302" height="32" width="464"/>
+  <object y="1700" x="2" height="32" width="664"/>
+  <object y="1850" x="102" height="32" width="564"/>
+  <object y="2000" x="2" height="32" width="400"/>
+  <object y="2000" x="502" height="32" width="264"/>
+  <object y="2150" x="2" height="32" width="664"/>
+  <object y="2300" x="102" height="32" width="564"/>
+  <object y="2450" x="2" height="32" width="200"/>
+  <object y="2450" x="302" height="32" width="464"/>
+  <object y="2600" x="2" height="32" width="664"/>
+  <object y="2750" x="102" height="32" width="564"/>
+  <object y="2900" x="2" height="32" width="400"/>
+  <object y="2900" x="502" height="32" width="264"/>
+  <object y="3050" x="2" height="32" width="664"/>
+  <object y="3200" x="102" height="32" width="564"/>
+  <object y="3350" x="2" height="32" width="200"/>
+  <object y="3350" x="302" height="32" width="464"/>
+  <object y="3500" x="2" height="32" width="664"/>
+  <object y="3650" x="102" height="32" width="564"/>
+  <object y="3800" x="2" height="32" width="400"/>
+  <object y="3800" x="502" height="32" width="264"/>
+  <object y="4000" x="2" height="32" width="400"/>
+  <object y="4000" x="502" height="32" width="264"/>
+  <object y="4200" x="2" height="32" width="400"/>
+  <object y="4200" x="502" height="32" width="264"/>
+  <object y="4400" x="2" height="32" width="400"/>
+  <object y="4400" x="502" height="32" width="264"/>
+  <object y="4600" x="2" height="32" width="400"/>
+  <object y="4600" x="502" height="32" width="264"/>
+  <object y="4800" x="2" height="32" width="400"/>
+  <object y="4800" x="502" height="32" width="264"/>
+  <object y="5000" x="2" height="32" width="400"/>
+  <object y="5000" x="502" height="32" width="264"/>
+  <object y="5200" x="2" height="32" width="400"/>
+  <object y="5200" x="502" height="32" width="264"/>
+ </objectgroup>
+ <objectgroup name="coins" height="40" width="24">
+  <object y="96" x="544" height="32" width="32"/>
+  <object y="608" x="512" height="32" width="32"/>
+  <object y="832" x="160" height="32" width="32"/>
+  <object y="192" x="224" height="32" width="32"/>
+  <object y="1216" x="640" height="32" width="32"/>
+  <object y="1216" x="128" height="32" width="32"/>
+  <object y="32" x="32" height="32" width="32"/>
+ </objectgroup>
+ <objectgroup name="portals" height="40" width="24" visible="0">
+  <object name="start" y="32" x="576" height="32" width="32"/>
+  <object name="finish" y="1216" x="32" height="32" width="32"/>
+ </objectgroup>
+</map>
