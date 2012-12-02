@@ -86,7 +86,7 @@ self.init = function (objects) {
 //	self.world.SetContactListener(self.listener);
 
 	setInterval(self.update, 0.0167);	/* Update the physics 60 times per second. */
-	setInterval(self.cleanup, 0.040);  /* Check for object removal 25 times per second. */
+	setInterval(self.cleanup, 0.0111);  /* Check for object removal 90 times per second. */
 };
 
 self.update = function () {
@@ -105,10 +105,23 @@ self.update = function () {
     );
 
     var b2Transform = new Box2D.Common.Math.b2Transform();
+    var floors = [];
+
+    function calculateNewY() {
+        var newY = self.floors[n].GetPosition().y - 0.04;
+        if ( - newY * self.world.scale > 1350){
+            newY = 0;
+        }
+        return newY;
+    }
 
     for (n = 0; n < self.floors.length; n++) {
-        b2Transform.Initialize(new Box2D.Common.Math.b2Vec2(self.floors[n].GetPosition().x, self.floors[n].GetPosition().y - 0.04), Box2D.Common.Math.b2Mat22.FromAngle(0));
+        b2Transform.Initialize(new Box2D.Common.Math.b2Vec2(self.floors[n].GetPosition().x, calculateNewY()), Box2D.Common.Math.b2Mat22.FromAngle(0));
         self.floors[n].SetTransform(b2Transform);
+        floors[n] = {
+            x: self.floors[n].GetPosition().x * self.world.scale,
+            y: -self.floors[n].GetPosition().y * self.world.scale,
+            r: self.floors[n].GetAngle()};
     }
 
     /* Process the physics for this tick. */
@@ -131,18 +144,11 @@ self.update = function () {
             x: self.ball.GetPosition().x * self.world.scale,
             y: -self.ball.GetPosition().y * self.world.scale,
             r: self.ball.GetAngle()
-        }
+        },
+        floors: floors
     });
 
-    var floors = [];
-    for (n = 0; n < self.floors.length; n++) {
-        floors[n] = {
-            x: self.floors[n].GetPosition().x * self.world.scale,
-            y: -self.floors[n].GetPosition().y * self.world.scale,
-            r: self.floors[n].GetAngle()};
-    }
 
-    self.postMessage(floors)
 };
 
 self.cleanup = function () {
