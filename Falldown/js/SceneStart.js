@@ -1,20 +1,4 @@
-/*
-- Copyright (c) 2012 Research In Motion Limited.
--
-- Licensed under the Apache License, Version 2.0 (the "License");
-- you may not use this file except in compliance with the License.
-- You may obtain a copy of the License at
--
-- http://www.apache.org/licenses/LICENSE-2.0
--
-- Unless required by applicable law or agreed to in writing, software
-- distributed under the License is distributed on an "AS IS" BASIS,
-- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-- See the License for the specific language governing permissions and
-- limitations under the License.
-*/
-
-/*global cc, Worker, Freewill */
+/*global cc, Worker */
 
 /* Global namespace for communicating with the Web Worker. */
 var _g = {
@@ -24,7 +8,7 @@ var _g = {
 var LayerStart = cc.Layer.extend({
 	physics:	null,	/* Our physics Web Worker. */
 	background:	null,	/* A cc.Sprite with our background image. */
-	hero:		null,	/* A cc.Sprite with our hero image and properties. */
+	ball:		null,	/* A cc.Sprite with our ball image and properties. */
 	floors:		null,   /* An [] of floor objects retrieved from the TMX file. */
 	newRailFlag:		true,   /* An [] of floor objects retrieved from the TMX file. */
 
@@ -44,15 +28,15 @@ var LayerStart = cc.Layer.extend({
 		/* Get our physics worker going. */
 		this.physics = new Worker('./js/Box2dWebWorker.js');
 		this.physics.addEventListener('message', function (e) {
-			if (e.data.hero) {
-				/* If hero data exists, update our position and rotation. */
-				_g.LayerStart.hero.setPosition(new cc.Point(
-					e.data.hero.x,
-					e.data.hero.y
+			if (e.data.ball) {
+				/* If ball data exists, update our position and rotation. */
+				_g.LayerStart.ball.setPosition(new cc.Point(
+					e.data.ball.x,
+					e.data.ball.y
 				));
-				_g.LayerStart.hero.setRotation(e.data.hero.r / (Math.PI * 2.0) * 360.0);
+				_g.LayerStart.ball.setRotation(e.data.ball.r / (Math.PI * 2.0) * 360.0);
 			} else if (e.data.msg === 'remove') {
-				/* If we need to remove sprites (i.e. hero ran into a coin), update our counter. */
+				/* If we need to remove sprites (i.e. ball ran into a coin), update our counter. */
 				_g.LayerStart.removeChild(_g.LayerStart.coins.sprites[e.data.index]);
 				_g.LayerStart.coins.sprites[e.data.index] = null;
 				_g.LayerStart.coins.sprites.count = _g.LayerStart.coins.sprites.count - 1;
@@ -61,7 +45,7 @@ var LayerStart = cc.Layer.extend({
 					_g.LayerStart.finish.runAction(cc.FadeTo.create(2.0, 255.0));
 				}
 			} else if (e.data.msg === 'removeFloors') {
-				/* If we need to remove sprites (i.e. hero ran into a coin), update our counter. */
+				/* If we need to remove sprites (i.e. ball ran into a coin), update our counter. */
                 for (var i = 0 ; i< e.data.n ; i++) {
                     _g.LayerStart.removeChild(_g.LayerStart.floors.sprites.pop());
                 }
@@ -130,11 +114,11 @@ var LayerStart = cc.Layer.extend({
 //		this.addChild(this.background, 0);
 
 		/* Load the ball. */
-		this.hero = cc.Sprite.create('./images/ball_64.png');
-//		this.hero.setAnchorPoint(new cc.Point(0.5, 0.5));
-		this.hero.setPosition(new cc.Point(0.0, 0.0));
-		this.hero.j = []; /* Will hold the impulse force acting on the hero. */
-		this.addChild(this.hero, 2);
+		this.ball = cc.Sprite.create('./images/ball_64.png');
+//		this.ball.setAnchorPoint(new cc.Point(0.5, 0.5));
+		this.ball.setPosition(new cc.Point(0.0, 0.0));
+		this.ball.j = []; /* Will hold the impulse force acting on the ball. */
+		this.addChild(this.ball, 2);
 
 		/* Load the coins. */
 //		this.coins = tmx.getObjectGroup('coins').getObjects();
@@ -179,20 +163,20 @@ var LayerStart = cc.Layer.extend({
 		this.finish.setOpacity(0.0);
 		this.addChild(this.finish, 1);
 		
-		_g.LayerStart.hero.j[0] = 0;
-		_g.LayerStart.hero.j[1] = 0;
+		_g.LayerStart.ball.j[0] = 0;
+		_g.LayerStart.ball.j[1] = 0;
 		window.addEventListener("devicemotion", function(event) {
 
 		var ax = event.accelerationIncludingGravity.x;
 		var ay = event.accelerationIncludingGravity.y;
 		var az = event.accelerationIncludingGravity.z;
 //		alert(ax+"\n"+ay+"\n"+az);
-		_g.LayerStart.hero.j[0] = ax/2;
-		_g.LayerStart.hero.j[1] = ay>0 ? 0: -ay/4;
+		_g.LayerStart.ball.j[0] = ax/2;
+		_g.LayerStart.ball.j[1] = ay>0 ? 0: -ay/4;
 		
 		}, true);
 
-		/* Every frame, we will update the Web Worker with the current forces acting on our hero based on user input. */
+		/* Every frame, we will update the Web Worker with the current forces acting on our ball based on user input. */
 		this.schedule(this.update);
 		return true;
 	},
@@ -201,9 +185,9 @@ var LayerStart = cc.Layer.extend({
 	update: function () {
 		this.physics.postMessage({
 			msg: 'ApplyImpulse',
-			j: this.hero.j
+			j: this.ball.j
 		});
-//		this.hero.j[1] = 0.0; /* Reset vertical impulse to 0 after each frame (otherwise hero will fly away.) */
+//		this.ball.j[1] = 0.0; /* Reset vertical impulse to 0 after each frame (otherwise ball will fly away.) */
 	}
 
 });
