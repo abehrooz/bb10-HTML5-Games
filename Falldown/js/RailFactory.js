@@ -22,7 +22,6 @@ function Mash() {
 
 function Alea() {
     return (function(args) {
-        // Johannes Baagøe <baagoe@baagoe.com>, 2010
         var s0 = 0;
         var s1 = 0;
         var s2 = 0;
@@ -75,14 +74,15 @@ function Alea() {
 
 function RandomRail() {
     return (function(args) {
-        // Johannes Baagøe <baagoe@baagoe.com>, 2010
         if (args.length ==  0) {
-            args = [+new Date, 768, 100, 32];
+            args = [+new Date, 500, 120, 32, 768];
         }
         var seed = args[0]? args[0] : +new Date;
-        var max = args[1] ? args[1] : 768;
-        var wholeSize = args[2] ? args[2]: 100;
+        var width = args[1] ? args[1] : 500;
+        var wholeSize = args[2] ? args[2]: 120;
         var height = args[3]? args[3]: 32;
+        var minWith = args[4]? args[4]: 200;
+        var frameWidth = args[5]? args[5]: 768;
         var random =  new Alea(seed);
         function createobstacle(x, y, width) {
             var result = {}
@@ -93,17 +93,27 @@ function RandomRail() {
             return result;
         }
         var rail = function (y) {
-            var rand = Math.floor(random() * max * 1.5);
             var nextRail = [];
-            if (rand <= max - wholeSize){
-                nextRail[0] = createobstacle(0, y, rand);
-                nextRail[1] = createobstacle(rand + wholeSize, y, max - rand - wholeSize);
-            }else {
-                var p1 = rand - (max - wholeSize);
-                var p2 = p1 + wholeSize + max/4
-                nextRail[0] = createobstacle(0, y, p1);
-                nextRail[1] = createobstacle(p1 + wholeSize, y, max/4);
-                nextRail[2] = createobstacle(p2, y, max - p2 - wholeSize);
+            var i;
+            for (i = -2; i< 2 ; i++){
+                var x1 = i*width;
+                var width1 = Math.floor(random() * (width- wholeSize - minWith) + minWith );
+                if (x1>0 && x1< wholeSize){
+                    x1 = 0;
+                }
+                if (x1> 0 && frameWidth - (x1 + width1)< wholeSize){
+                    width1 += frameWidth - (x1 + width1)
+                }
+                nextRail.push(createobstacle(x1, y, width1));
+                var x2 = x1 + width1 + wholeSize;
+                if (x2>0 && x2< wholeSize){
+                    x2 = 0;
+                }
+                var width2 = (width-width1-wholeSize)+ 1;
+                if (x2> 0 && frameWidth - (x2 + width2)< wholeSize){
+                    width2 += frameWidth - (x2 + width2)
+                }
+                nextRail.push(createobstacle(x2, y, width2 ))
             }
             return nextRail;
         };

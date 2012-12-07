@@ -2,9 +2,10 @@
 
 /* Bring in the Box2DWeb functionality. */
 importScripts('./Box2D.js');
+importScripts('./RailFactory.js');
 
 self.init = function (objects) {
-	var fixtureDef, bodyDef, object, n;
+	var fixtureDef, bodyDef, object, n, j;
 
 	/* Our world. */
 	self.world = new Box2D.Dynamics.b2World(
@@ -14,6 +15,8 @@ self.init = function (objects) {
 	
 	self.world.scale = 32.0;
 	self.remove = [];
+
+    self.score = 0;
 	
 
 	/* Global properties. */
@@ -24,7 +27,7 @@ self.init = function (objects) {
 	bodyDef					= new Box2D.Dynamics.b2BodyDef();
 
 	/* Generate our walls. */
-	for (n = 0; n < objects.walls.length; n = n + 1) {
+	for (n = 0; n < objects.walls.length; n++) {
 		object					= objects.walls[n];
 		bodyDef.type			= Box2D.Dynamics.b2Body.b2_staticBody;
 		bodyDef.position.x		= (object.x + object.width / 2.0) / self.world.scale;
@@ -36,20 +39,23 @@ self.init = function (objects) {
 
 	/* Add our floors. */
 	var floors = [];
-	for (n = 0; n < objects.floors.length; n = n + 1) {
-		object					= objects.floors[n];
-		bodyDef.type			= Box2D.Dynamics.b2Body.b2_staticBody;
-		bodyDef.position.x		= (object.x + object.width / 2.0) / self.world.scale;
-		bodyDef.position.y		= -(object.y + object.height / 2.0) / self.world.scale;
-		fixtureDef.shape		= new Box2D.Collision.Shapes.b2PolygonShape();
-		fixtureDef.shape.SetAsBox(object.width / 2.0 / self.world.scale, object.height / 2.0 / self.world.scale);
-		object = self.world.CreateBody(bodyDef);
-		object.CreateFixture(fixtureDef).SetUserData({
-			tagName: 'floor',
-			index: n
-		});
-		floors[n] = object;
-	}
+	for (n = 0; n < objects.floors.length; n++) {
+        floors[n] = [];
+        for (j = 0 ; j<objects.floors[n].length; j++ ){
+            object					= objects.floors[n][j];
+            bodyDef.type			= Box2D.Dynamics.b2Body.b2_staticBody;
+            bodyDef.position.x		= (object.x + object.width / 2.0) / self.world.scale;
+            bodyDef.position.y		= -(object.y + object.height / 2.0) / self.world.scale;
+            fixtureDef.shape		= new Box2D.Collision.Shapes.b2PolygonShape();
+            fixtureDef.shape.SetAsBox(object.width / 2.0 / self.world.scale, object.height / 2.0 / self.world.scale);
+            object = self.world.CreateBody(bodyDef);
+            object.CreateFixture(fixtureDef).SetUserData({
+                tagName: 'floor',
+                index: n
+            });
+            floors[n].push(object);
+        }
+    }
 	self.floors = floors;
 
 
@@ -90,7 +96,7 @@ self.init = function (objects) {
 };
 
 self.update = function () {
-
+    var n, j;
     /* Apply the horizontal and vertical impulse forces to our ball. */
     self.ball.ApplyImpulse(
         new Box2D.Common.Math.b2Vec2(self.ball.j[0], self.ball.j[1]),
@@ -106,22 +112,74 @@ self.update = function () {
 
     var b2Transform = new Box2D.Common.Math.b2Transform();
     var floors = [];
+    var newRow, newX, xShift,rXShift,lXShift, width, lastcornerX,leftWhole, rightWhole;
 
-    function calculateNewY() {
-        var newY = self.floors[n].GetPosition().y - 0.04;
-        if ( - newY * self.world.scale > 1350){
-            newY = 0;
+    function checkForRightSmallWhole() {
+        for (j = 0; j < this.floors[n].length; j++) {
+            newX = xShift + self.floors[n][j].GetPosition().x;
+            width = self.floors[n][j].GetFixtureList().GetShape().GetVertices()[2].x;
+            lastcornerX = (newX + width);
+            if (768 / self.world.scale - lastcornerX > 0 && 768 / self.world.scale - lastcornerX < 120 / self.world.scale) {
+                rXShift = xShift + 768 / self.world.scale - lastcornerX;
+                rightWhole = true;
+            }
         }
-        return newY;
+    }
+
+    function checkForLeftSmallWhole() {
+        for (j = 0; j < this.floors[n].length; j++) {
+            newX = xShift + self.floors[n][j].GetPosition().x;
+            if (newX > 0 && newX < 120 / self.world.scale) {
+                lXShift = - self.floors[n][j].GetPosition().x;
+                leftWhole = true;
+            }
+        }
     }
 
     for (n = 0; n < self.floors.length; n++) {
-        b2Transform.Initialize(new Box2D.Common.Math.b2Vec2(self.floors[n].GetPosition().x, calculateNewY()), Box2D.Common.Math.b2Mat22.FromAngle(0));
-        self.floors[n].SetTransform(b2Transform);
-        floors[n] = {
-            x: self.floors[n].GetPosition().x * self.world.scale,
-            y: -self.floors[n].GetPosition().y * self.world.scale,
-            r: self.floors[n].GetAngle()};
+        floors[n] = [];
+        newRow = - self.floors[n][0].GetPosition().y * self.world.scale > 1400;
+        if (newRow) {
+            xShift = (self.floors[n][0].GetPosition().x > 0 / self.world.scale) ?( -1000/ self.world.scale - self.floors[n][0].GetPosition().x ) : self.random() * 400 / self.world.scale;
+            leftWhole = false;
+            rightWhole = false;
+            checkForRightSmallWhole.call(this);
+            if (rightWhole){
+                xShift = rXShift;
+            }
+            checkForLeftSmallWhole.call(this);
+            if (rightWhole && leftWhole){
+                xShift = ( -1000/ self.world.scale - self.floors[n][0].GetPosition().x );
+            }else if (leftWhole){
+                xShift = lXShift;
+            }
+        } else {
+            xShift = 0;
+        }
+
+
+        for (j = 0 ; j<this.floors[n].length; j++ ){
+//                if (newX*self.world.scale<100){
+//                    newX = 100/self.world.scale;
+//                }else {
+//                    var width = self.floors[n][j].GetFixtureList().GetShape().GetVertices()[2].x;
+//                    var lastcornerX = (newX + width);
+//                    if (768 - lastcornerX *self.world.scale< 100 ){
+//                        newX += 768/self.world.scale - lastcornerX;
+//                    }
+//                }
+            b2Transform.Initialize(new Box2D.Common.Math.b2Vec2( xShift + self.floors[n][j].GetPosition().x,
+                ( newRow)? 0: self.floors[n][j].GetPosition().y - 0.23),
+                Box2D.Common.Math.b2Mat22.FromAngle(0));
+            self.floors[n][j].SetTransform(b2Transform);
+            floors[n][j] = {
+                x: self.floors[n][j].GetPosition().x * self.world.scale,
+                y: -self.floors[n][j].GetPosition().y * self.world.scale,
+                r: self.floors[n][j].GetAngle()};
+        }
+        if (newRow){
+            self.score++;
+        }
     }
 
     /* Process the physics for this tick. */
@@ -167,49 +225,7 @@ self.addEventListener('message', function (e) {
         self.ball.j = e.data.j;
     } else if (e.data.msg === 'init') {
         self.init(e.data);
-    } else if (e.data.msg === 'NewRail') {
-        self.newRail(e.data.rail);
     }
 });
 
-self.newRail = function(rail){
-    var fixtureDef, bodyDef, object, n;
-    fixtureDef				= new Box2D.Dynamics.b2FixtureDef();
-    fixtureDef.density		= 4.0;
-    fixtureDef.friction		= 0.1;
-    fixtureDef.restitution	= 0.1;
-    bodyDef					= new Box2D.Dynamics.b2BodyDef();
-//    var floors = [];
-    for (n = 0; n < rail.length; n = n + 1) {
-        object					= rail[n];
-        bodyDef.type			= Box2D.Dynamics.b2Body.b2_staticBody;
-        bodyDef.position.x		= (object.x + object.width / 2.0) / self.world.scale;
-        bodyDef.position.y		= -(object.y + object.height / 2.0) / self.world.scale;
-        fixtureDef.shape		= new Box2D.Collision.Shapes.b2PolygonShape();
-        fixtureDef.shape.SetAsBox(object.width / 2.0 / self.world.scale, object.height / 2.0 / self.world.scale);
-        object = self.world.CreateBody(bodyDef);
-        object.CreateFixture(fixtureDef).SetUserData({
-            tagName: 'floor',
-            index: self.floors.length + n
-        });
-//        floors[n] = object;
-        self.floors.unshift(object);
-    }
-
-    // removing the floors that go out of the screen.
-    var outOfBoundY= self.floors[self.floors.length - 1].GetPosition().y;
-    var currentFloorY = outOfBoundY;
-    var numberOfFloors = 0;
-    while(Math.abs(currentFloorY - outOfBoundY)<0.1){
-        currentFloorY = self.floors[self.floors.length - 2 - numberOfFloors++].GetPosition().y;
-    };
-    for(var i = 0; i< numberOfFloors ; i++){
-        self.remove.push(self.floors.pop());
-    }
-    self.postMessage({
-        msg: 'removeFloors',
-        n:numberOfFloors
-    });
-
-
-};
+self.random = new Alea(6578);
