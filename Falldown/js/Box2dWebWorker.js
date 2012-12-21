@@ -61,8 +61,8 @@ self.init = function (objects) {
 
 	/* Add a ball. */
 	bodyDef.type			= Box2D.Dynamics.b2Body.b2_dynamicBody;
-	bodyDef.position.x		= (objects.portals[0].x + objects.portals[0].width / 2.0) / self.world.scale;
-	bodyDef.position.y		= -(objects.portals[0].y + objects.portals[0].height / 2.0) / self.world.scale;
+	bodyDef.position.x		= 576 / self.world.scale;
+	bodyDef.position.y		= -32 / self.world.scale;
 	fixtureDef.shape		= new Box2D.Collision.Shapes.b2CircleShape(64.0 / 2.0 / self.world.scale);
 	self.ball = self.world.CreateBody(bodyDef);
 	self.ball.CreateFixture(fixtureDef).SetUserData({});
@@ -159,17 +159,8 @@ self.update = function () {
 
 
         for (j = 0 ; j<this.floors[n].length; j++ ){
-//                if (newX*self.world.scale<100){
-//                    newX = 100/self.world.scale;
-//                }else {
-//                    var width = self.floors[n][j].GetFixtureList().GetShape().GetVertices()[2].x;
-//                    var lastcornerX = (newX + width);
-//                    if (768 - lastcornerX *self.world.scale< 100 ){
-//                        newX += 768/self.world.scale - lastcornerX;
-//                    }
-//                }
             b2Transform.Initialize(new Box2D.Common.Math.b2Vec2( xShift + self.floors[n][j].GetPosition().x,
-                ( newRow)? 0: self.floors[n][j].GetPosition().y - 0.23),
+                ( newRow)? 0: self.floors[n][j].GetPosition().y - 0.07),
                 Box2D.Common.Math.b2Mat22.FromAngle(0));
             self.floors[n][j].SetTransform(b2Transform);
             floors[n][j] = {
@@ -178,7 +169,7 @@ self.update = function () {
                 r: self.floors[n][j].GetAngle()};
         }
         if (newRow){
-            self.score++;
+            self.score += 500;
         }
     }
 
@@ -203,7 +194,8 @@ self.update = function () {
             y: -self.ball.GetPosition().y * self.world.scale,
             r: self.ball.GetAngle()
         },
-        floors: floors
+        floors: floors,
+        score: self.score
     });
 
 

@@ -21,6 +21,7 @@
 			function onwebworksready() {
 				document.removeEventListener('webworksready', onwebworksready, false);
 
+                var MW = MW || {};
 				/* Create a new script to begin loading Cocos2d-HTML5. */
 				var script = document.createElement('script');
 				script.id = 'cocos2d-html5';	/* This ID is required. */
@@ -31,6 +32,10 @@
 						'./cocos/cocos2d/',		/* Location of the cocos2d framework. */
 					appFiles: [
                         './js/RailFactory.js',  /*Helper class to create random rails*/
+						'./resources.js',
+						'./js/Effect.js',
+						'./js/GameOver.js',
+						'./js/MainMenu.js',
 						'./js/SceneStart.js'	/* Our primary layer. */
 					]
 				};

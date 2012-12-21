@@ -1,7 +1,7 @@
 var ccApplication = cc.Application.extend({
 	ctor: function () {
 		this._super();
-		this.startScene = SceneStart;
+		this.startScene = MainMenuScene;
 
 		cc.COCOS2D_DEBUG = 0;	/* 0 = OFF, 1 = BASIC, 2 = FULL. */
 		cc.initDebugSetting();

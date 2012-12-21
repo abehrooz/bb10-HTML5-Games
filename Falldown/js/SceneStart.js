@@ -2,10 +2,11 @@
 
 /* Global namespace for communicating with the Web Worker. */
 var _g = {
-	LayerStart: null
+	LayerStart: null,
+    score: null
 };
 		
-var LayerStart = cc.Layer.extend({
+var GameLayer = cc.Layer.extend({
 	physics:	null,	/* Our physics Web Worker. */
 	background:	null,	/* A cc.Sprite with our background image. */
 	ball:		null,	/* A cc.Sprite with our ball image and properties. */
@@ -13,13 +14,17 @@ var LayerStart = cc.Layer.extend({
 	/* An [] of floor objects retrieved from the TMX file. */
 
 	ctor: function () {
+        cc.associateWithNative( this, cc.Layer );
+        this.init();
+    },
+    init:function () {
 		var tmx, n, j;
         var nextRail = new RandomRail(5887);
 
 		/* Always call _super() first. */
 		this._super();
 		_g.LayerStart = this;
-
+        _g.score = 0
 
 
         /* Load our TMX-as-XML world. */
@@ -31,26 +36,35 @@ var LayerStart = cc.Layer.extend({
         };
 
 
-		/* Initialize our Web Worker. */
+        var winSize = cc.Director.getInstance().getWinSize();
+
+        // score
+        this.lbScore = cc.LabelTTF.create("Score: 0", "Arial Bold",28,cc.SizeMake(400,28),cc.TEXT_ALIGNMENT_LEFT);
+        this.lbScore.setAnchorPoint(cc.p(1,0));
+        this.addChild(this.lbScore, 1000);
+        this.lbScore.setPosition(cc.p(420 , winSize.height - 30));
+
+
+        /* Initialize our Web Worker. */
         this.physics = new Worker('./js/Box2dWebWorker.js');
 		this.physics.postMessage({
 			msg: 'init',
 			walls: tmx.getObjectGroup('walls').getObjects(),
 			coins: tmx.getObjectGroup('coins').getObjects(),
-			floors: initialFloors,
-			portals: tmx.getObjectGroup('portals').getObjects()
+			floors: initialFloors
+//			portals: tmx.getObjectGroup('portals').getObjects()
 		});
 
 		/* Load the scenery. */
 		this.background = cc.Sprite.create('./images/background.png');
-		this.background.setAnchorPoint(new cc.Point(0.0, 0.0));
+//		this.background.setAnchorPoint(new cc.Point(0.0, 0.0));
 		this.background.setPosition(new cc.Point(384.0, 640.0));
 		this.addChild(this.background, 0);
 
 		/* Load the ball. */
 		this.ball = cc.Sprite.create('./images/ball_64.png');
 //		this.ball.setAnchorPoint(new cc.Point(0.5, 0.5));
-		this.ball.setPosition(new cc.Point(0.0, 0.0));
+//		this.ball.setPosition(new cc.Point(384.0, 840.0));
 		this.ball.j = []; /* Will hold the impulse force acting on the ball. */
 		this.addChild(this.ball, 2);
 
@@ -102,6 +116,9 @@ var LayerStart = cc.Layer.extend({
 
         this.physics.addEventListener('message', function (e) {
             if (e.data.ball) {
+                if (e.data.ball.y > 1250){
+                    _g.LayerStart.onGameOver();
+                }
                 _g.LayerStart.ball.setPosition(new cc.Point(e.data.ball.x,e.data.ball.y));
                 _g.LayerStart.ball.setRotation(e.data.ball.r / (Math.PI * 2.0) * 360.0);
             };
@@ -112,12 +129,25 @@ var LayerStart = cc.Layer.extend({
                     }
                 };
             };
+            if (e.data.score){
+                _g.LayerStart.lbScore.setString("Score: " + e.data.score);
+                _g.score = e.data.score;
+            }
         });
+
+//        cc.Director.getInstance().popToRootScene();
 
 		/* Every frame, we will update the Web Worker with the current forces acting on our ball based on user input. */
 		this.schedule(this.update);
 		return true;
 	},
+
+    onGameOver:function () {
+        this.physics.terminate();
+        var scene = cc.Scene.create();
+        scene.addChild(new GameOverLayer());
+        cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, scene));
+    },
 
 	update: function () {
 		this.physics.postMessage({
@@ -126,12 +156,4 @@ var LayerStart = cc.Layer.extend({
 		});
 	}
 
-});
-
-/* Our main Scene object that holds our Layer. */
-var SceneStart = cc.Scene.extend({
-    onEnter: function () {
-        this._super();
-        this.addChild(new LayerStart());
-    }
 });
