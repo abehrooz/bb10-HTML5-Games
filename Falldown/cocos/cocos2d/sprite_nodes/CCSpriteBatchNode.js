@@ -69,7 +69,7 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
     ctor:function (fileImage) {
         this._super();
         if (fileImage) {
-            this.initWithFile(fileImage, cc.DEFAULT_SPRITE_BATCH_CAPACITY);
+            this.init(fileImage, cc.DEFAULT_SPRITE_BATCH_CAPACITY);
         }
         this._renderTexture = cc.RenderTexture.create(cc.canvas.width, cc.canvas.height);
         this.setContentSize(cc.size(cc.canvas.width, cc.canvas.height));
@@ -302,14 +302,14 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
      */
     setNodeDirty:function () {
         this._setNodeDirtyForCache();
-        this._isTransformDirty = this._isInverseDirty = true;
+        this._transformDirty = this._inverseDirty = true;
         if (cc.NODE_TRANSFORM_USING_AFFINE_MATRIX) {
-            this._isTransformGLDirty = true;
+            this._transformGLDirty = true;
         }
     },
 
     _setNodeDirtyForCache:function () {
-        this._isCacheDirty = true;
+        this._cacheDirty = true;
     },
 
     /**
@@ -322,16 +322,11 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
      * @param {Number} capacity
      * @return {Boolean}
      */
-    initWithFile:function (fileImage, capacity) {
+    init:function (fileImage, capacity) {
         var texture2D = cc.TextureCache.getInstance().textureForKey(fileImage);
         if (!texture2D)
             texture2D = cc.TextureCache.getInstance().addImage(fileImage);
         return this.initWithTexture(texture2D, capacity);
-    },
-
-    init:function () {
-        var texture = new cc.Texture2D();
-        return this.initWithTexture(texture, 0);
     },
 
     /**
@@ -611,7 +606,7 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
 
     /**
      * set the source blending function for the texture
-     * @param {Number} src 
+     * @param {Number} src
      * @param {Number} dst
      */
     setBlendFunc:function (src, dst) {
@@ -638,14 +633,14 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
         if (cc.renderContextType == cc.CANVAS) {
             var context = ctx || cc.renderContext;
             // quick return if not visible
-            if (!this._isVisible) {
+            if (!this._visible) {
                 return;
             }
             context.save();
             this.transform(ctx);
             var i;
             if (this._isUseCache) {
-                if (this._isCacheDirty) {
+                if (this._cacheDirty) {
                     //add dirty region
                     this._renderTexture.clear();
                     this._renderTexture.context.save();
@@ -659,7 +654,7 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
                         }
                     }
                     this._renderTexture.context.restore();
-                    this._isCacheDirty = false;
+                    this._cacheDirty = false;
                 }
                 // draw RenderTexture
                 this.draw(ctx);
@@ -685,7 +680,7 @@ cc.SpriteBatchNode = cc.Node.extend(/** @lends cc.SpriteBatchNode# */{
             // The alternative is to have a void CCSprite#visit, but
             // although this is less mantainable, is faster
             //
-            if (!this._isVisible) {
+            if (!this._visible) {
                 return;
             }
 
@@ -908,7 +903,7 @@ cc.SpriteBatchNode.create = function (fileImage, capacity) {
     }
 
     var batchNode = new cc.SpriteBatchNode();
-    batchNode.initWithFile(fileImage, capacity);
+    batchNode.init(fileImage, capacity);
 
     return batchNode;
 };

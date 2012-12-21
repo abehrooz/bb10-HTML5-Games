@@ -245,7 +245,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
     _blendFunc:{src:cc.BLEND_SRC, dst:cc.BLEND_DST},
     _texture:null,
     _originalTexture:null,
-    _color:cc.white(),
+    _color:null,
     //
     // Shared data
     //
@@ -279,6 +279,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         this._shouldBeHidden = false;
         this._offsetPosition = cc.p(0, 0);
         this._unflippedOffsetPositionFromCenter = cc.p(0, 0);
+        this._color = cc.white();
 
         if (fileName) {
             if (typeof(fileName) == "string") {
@@ -429,6 +430,8 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
      * @return {Boolean}
      */
     init:function () {
+        this._super();
+
         this._dirty = this._recursiveDirty = false;
 
         this._opacityModifyRGB = true;
@@ -549,7 +552,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         var texture = cc.TextureCache.getInstance().textureForKey(filename);
         if (!texture) {
             //texture = cc.TextureCache.getInstance().addImage(filename);
-            this._isVisible = false;
+            this._visible = false;
             var loadImg = new Image();
             loadImg.addEventListener("load", function () {
                 if (!rect) {
@@ -557,7 +560,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
                 }
                 selfPointer.initWithTexture(loadImg, rect);
                 cc.TextureCache.getInstance().cacheImage(filename, loadImg);
-                selfPointer._isVisible = true;
+                selfPointer._visible = true;
             });
             loadImg.addEventListener("error", function () {
                 cc.log("load failure:" + filename);
@@ -773,7 +776,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         if (this.isDirty()) {
 
             // If it is not visible, or one of its ancestors is not visible, then do nothing:
-            if (!this._isVisible || ( this._parent && this._parent != this._batchNode && this._parent._shouldBeHidden)) {
+            if (!this._visible || ( this._parent && this._parent != this._batchNode && this._parent._shouldBeHidden)) {
                 this._quad.br.vertices = this._quad.tl.vertices = this._quad.tr.vertices = this._quad.bl.vertices = cc.vertex3(0, 0, 0);
                 this._shouldBeHidden = true;
             } else {
@@ -859,7 +862,7 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         tv.skew.x = this._skewX;
         tv.skew.y = this._skewY;
         tv.ap = this._anchorPointInPoints;
-        tv.visible = this._isVisible;
+        tv.visible = this._visible;
         return tv;
     },
 
@@ -1418,20 +1421,8 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         }
 
         this._color = this._colorUnmodified = new cc.Color3B(color3.r, color3.g, color3.b);
-        if (this.getTexture()) {
-            if (cc.renderContextType == cc.CANVAS) {
-                var cacheTextureForColor = cc.TextureCache.getInstance().getTextureColors(this._originalTexture);
-                if (cacheTextureForColor) {
-                    //generate color texture cache
-                    if (this._texture instanceof HTMLCanvasElement) {
-                        cc.generateTintImage(this.getTexture(), cacheTextureForColor, this._color, this.getTextureRect(), this._texture);
-                    } else {
-                        var colorTexture = cc.generateTintImage(this.getTexture(), cacheTextureForColor, this._color, this.getTextureRect());
-                        this.setTexture(colorTexture);
-                    }
-                }
-            }
-        }
+        this._changeTextureColor();
+
         /*
          if (this._opacityModifyRGB) {
          this._color.r = Math.round(color3.r * this._opacity / 255);
@@ -1444,6 +1435,23 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         //this._addDirtyRegionToDirector(this.getBoundingBoxToWorld());
 
         this.setNodeDirty();
+    },
+
+    _changeTextureColor:function(){
+        if (this.getTexture()) {
+            if (cc.renderContextType === cc.CANVAS) {
+                var cacheTextureForColor = cc.TextureCache.getInstance().getTextureColors(this._originalTexture);
+                if (cacheTextureForColor) {
+                    //generate color texture cache
+                    if (this._texture instanceof HTMLCanvasElement && !this._rectRotated) {
+                        cc.generateTintImage(this.getTexture(), cacheTextureForColor, this._color, this.getTextureRect(), this._texture);
+                    } else {
+                        var colorTexture = cc.generateTintImage(this.getTexture(), cacheTextureForColor, this._color, this.getTextureRect());
+                        this.setTexture(colorTexture);
+                    }
+                }
+            }
+        }
     },
 
     // RGBAProtocol
@@ -1481,11 +1489,13 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         }
         // update rect
         this._rectRotated = newFrame.isRotated();
-        //if (this._rectRotated)
-        //    this.setRotation(-90);
+        if(this._rectRotated)
+            this._originalTexture = pNewTexture;
+
         this.setTextureRect(newFrame.getRect(), this._rectRotated, newFrame.getOriginalSize());
-        //save dirty region when after changed
-        //this._addDirtyRegionToDirector(this.getBoundingBoxToWorld());
+
+        if(this._color.r !== 255 || this._color.g !== 255 || this._color.b !== 255)
+            this._changeTextureColor();
     },
 
     // Animation
@@ -1622,7 +1632,8 @@ cc.Sprite = cc.Node.extend(/** @lends cc.Sprite# */{
         } else {
             if (this._texture != texture) {
                 if (texture instanceof  HTMLImageElement) {
-                    this._rect = cc.rect(0, 0, texture.width, texture.height);
+                    if(!this._rect || cc.rectEqualToRect(this._rect,cc.RectZero()))
+                        this._rect = cc.rect(0, 0, texture.width, texture.height);
                     this._texture = texture;
                     this._originalTexture = texture;
                 } else {

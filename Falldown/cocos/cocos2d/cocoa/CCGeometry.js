@@ -75,11 +75,25 @@ cc.PointZero = function () {
     return cc.p(0, 0);
 };
 
-/**
- * Point Zero Constant
- * @return {cc.Point}
- */
-cc.POINT_ZERO = cc.p(0, 0);
+Object.defineProperties(cc, {
+    POINT_ZERO:{
+        get:function () {
+            return cc.p(0, 0);
+        }
+    },
+    SIZE_ZERO:{
+        get:function () {
+            return cc.size(0, 0);
+        }
+    },
+    RECT_ZERO:{
+        get:function () {
+            return cc.rect(0, 0, 0, 0);
+        }
+    }
+});
+
+
 
 /**
  * @function
@@ -89,6 +103,8 @@ cc.POINT_ZERO = cc.p(0, 0);
  * Constructor
  */
 cc.pointEqualToPoint = function (point1, point2) {
+    if (!point1 || !point2)
+        return false;
     return ((point1.x == point2.x) && (point1.y == point2.y));
 };
 
@@ -149,11 +165,6 @@ cc.SizeZero = function () {
     return cc.size(0, 0);
 };
 
-/**
- * Size Zero constant
- * @return {cc.Size}
- */
-cc.SIZE_ZERO = cc.size(0, 0);
 
 /**
  * @function
@@ -163,6 +174,8 @@ cc.SIZE_ZERO = cc.size(0, 0);
  * Constructor
  */
 cc.sizeEqualToSize = function (size1, size2) {
+    if (!size1 || !size2)
+        return false;
     return ((size1.width == size2.width) && (size1.height == size2.height));
 };
 
@@ -251,12 +264,6 @@ cc.RectZero = function () {
 };
 
 /**
- * Rect Zero Constant
- * @return {cc.Rect}
- */
-cc.RECT_ZERO = cc.rect(0, 0, 0, 0);
-
-/**
  * @function
  * @param {cc.Rect} rect1
  * @param {cc.Rect} rect2
@@ -264,6 +271,8 @@ cc.RECT_ZERO = cc.rect(0, 0, 0, 0);
  * Constructor
  */
 cc.rectEqualToRect = function (rect1, rect2) {
+    if(!rect1 || !rect2)
+        return false;
     return ((cc.Point.CCPointEqualToPoint(rect1.origin, rect2.origin)) &&
         (cc.Size.CCSizeEqualToSize(rect1.size, rect2.size)));
 };

@@ -413,7 +413,7 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
      * @return {Boolean}
      */
     onTouchBegan:function (touch, e) {
-        if (this._state != cc.MENU_STATE_WAITING || !this._isVisible || !this._enabled) {
+        if (this._state != cc.MENU_STATE_WAITING || !this._visible || !this._enabled) {
             return false;
         }
 
@@ -494,7 +494,7 @@ cc.Menu = cc.Layer.extend(/** @lends cc.Menu# */{
     },
 
     _itemForTouch:function (touch) {
-        var touchLocation = touch.getLocation();
+        var touchLocation = cc.p(touch.pageX || 0, touch.pageY || 0);
 
         if (this._children && this._children.length > 0) {
             for (var i = 0; i < this._children.length; i++) {

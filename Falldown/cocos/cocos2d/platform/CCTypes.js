@@ -50,9 +50,9 @@ cc.Color3B = function (r1, g1, b1) {
             break;
         case 1:
             if (r1 && r1 instanceof cc.Color3B) {
-                this.r = r1.r || 0;
-                this.g = r1.g || 0;
-                this.b = r1.b || 0;
+                this.r = (0 | r1.r) || 0;
+                this.g = (0 | r1.g) || 0;
+                this.b = (0 | r1.b) || 0;
             } else {
                 this.r = 0;
                 this.g = 0;
@@ -60,9 +60,9 @@ cc.Color3B = function (r1, g1, b1) {
             }
             break;
         case 3:
-            this.r = r1 || 0;
-            this.g = g1 || 0;
-            this.b = b1 || 0;
+            this.r = (0 | r1) || 0;
+            this.g = (0 | g1) || 0;
+            this.b = (0 | b1) || 0;
             break;
         default:
             throw "unknown argument type";
@@ -82,14 +82,14 @@ cc.c3b = function (r, g, b) {
     return new cc.Color3B(r, g, b);
 };
 
-cc.integerToColor3B = function(intValue){
+cc.integerToColor3B = function (intValue) {
     intValue = intValue || 0;
 
     var offset = 0xff;
     var retColor = new cc.Color3B();
     retColor.r = intValue & (offset);
     retColor.g = (intValue >> 8) & offset;
-    retColor.b = (intValue >> 16)& offset;
+    retColor.b = (intValue >> 16) & offset;
     return retColor;
 };
 
@@ -98,6 +98,54 @@ cc.c3 = cc.c3b;
 
 
 //ccColor3B predefined colors
+Object.defineProperties(cc, {
+    WHITE:{
+        get:function () {
+            return cc.c3b(255, 255, 255);
+        }
+    },
+    YELLOW:{
+        get:function () {
+            return cc.c3b(255, 255, 0);
+        }
+    },
+    BLUE:{
+        get:function () {
+            return cc.c3b(0, 0, 255);
+        }
+    },
+    GREEN:{
+        get:function () {
+            return cc.c3b(0, 255, 0);
+        }
+    },
+    RED:{
+        get:function () {
+            return cc.c3b(255, 0, 0);
+        }
+    },
+    MAGENTA:{
+        get:function () {
+            return cc.c3b(255, 0, 255);
+        }
+    },
+    BLACK:{
+        get:function () {
+            return cc.c3b(0, 0, 0);
+        }
+    },
+    ORANGE:{
+        get:function () {
+            return cc.c3b(255, 127, 0);
+        }
+    },
+    GRAY:{
+        get:function () {
+            return cc.c3b(166, 166, 166);
+        }
+    }
+});
+
 /**
  *  White color (255,255,255)
  * @constant
@@ -177,7 +225,7 @@ cc.orange = function () {
  */
 cc.gray = function () {
     return new cc.Color3B(166, 166, 166);
-}
+};
 
 /**
  * RGBA color composed of 4 bytes
@@ -192,10 +240,10 @@ cc.gray = function () {
  * var redColor = new cc.Color4B(255,0,0,255);
  */
 cc.Color4B = function (r1, g1, b1, a1) {
-    this.r = r1;
-    this.g = g1;
-    this.b = b1;
-    this.a = a1;
+    this.r = 0 | r1;
+    this.g = 0 | g1;
+    this.b = 0 | b1;
+    this.a = 0 | a1;
 };
 
 /**
@@ -550,6 +598,37 @@ cc.BlendFunc = function (src1, dst1) {
     this.src = src1;
     this.dst = dst1;
 };
+
+
+/**
+ * convert Color3B to a string of color for style.
+ * e.g.  Color3B(255,6,255)  to : "#ff06ff"
+ * @param clr
+ * @return {String}
+ */
+cc.convertColor3BtoHexString = function (clr) {
+    var hR = clr.r.toString(16);
+    var hG = clr.g.toString(16);
+    var hB = clr.b.toString(16);
+    var stClr = "#" + (clr.r < 16 ? ("0" + hR) : hR) + (clr.g < 16 ? ("0" + hG) : hG) + (clr.b < 16 ? ("0" + hB) : hB);
+    return stClr;
+};
+
+/**
+ * convert a string of color for style to Color3B.
+ * e.g. "#ff06ff"  to : Color3B(255,6,255)
+ * @param clr
+ * @return {String}
+ */
+cc.convertHexNumToColor3B  = function(clrSt)
+{
+    var nAr = clrSt.substr(1).split("");
+    var r = parseInt("0x"+nAr[0]+nAr[1]);
+    var g = parseInt("0x"+nAr[2]+nAr[3]);
+    var b = parseInt("0x"+nAr[4]+nAr[5]);
+    return new cc.Color3B(r,g,b);
+};
+
 
 /**
  * text alignment : left
