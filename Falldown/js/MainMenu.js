@@ -23,6 +23,25 @@ var MainMenuLayer = cc.Layer.extend({
         this.addChild(gameSettingsNormal, 1);
         this.addChild(aboutNormal, 1);
 
+
+
+        /*The usage of freewill is a workaround to solve the initial black screen issue!! */
+		/* Load freewill. */
+		this.freewill = new Freewill({
+			container: document.querySelector('#freewill')
+		});
+
+		/* Add a Joystick to control movement. */
+		this.freewill.move = this.freewill.addJoystick({
+			imageBase: './images/tiles.png',						/* Irrelevant since we never see the Joystick. */
+			imagePad: './images/tiles.png',						/* Irrelevant since we never see the Joystick. */
+			fixed: true,														/* Joystick won't move. */
+			pos: [0.0, 0.0],													/* Irrelevant since we never see the Joystick. */
+			trigger: [0.0, 0.0, window.innerWidth / 2.0, window.innerHeight],	/* The touch area that triggers this Joystick will be the left half of the screen. */
+			opacLow: 0.0,														/* Lowest opacity is 0; invisible. */
+			opacHigh: 0.0														/* Highest opacity is 0; invisible. */
+		});
+
         function spriteContainsPoint(sprite, touch) {
             var x = touch.pageX;
             var y = 1280 - touch.pageY;
