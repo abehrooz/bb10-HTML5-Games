@@ -7,12 +7,11 @@ var MainMenuLayer = cc.Layer.extend({
     init:function () {
         this._super();
         this._isTouchEnabled = true;
-        var s_menu = './images/buttons.png';
-        var newGameNormal = cc.Sprite.create(s_menu, cc.rect(0, 0, 366, 122));
+        var newGameNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 0, 366, 122));
         newGameNormal.setContentSize(new cc.size(366, 122));
-        var gameSettingsNormal = cc.Sprite.create(s_menu, cc.rect(0, 122, 366, 122));
+        var gameSettingsNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 122, 366, 122));
         gameSettingsNormal.setContentSize(new cc.size(366, 122));
-        var aboutNormal = cc.Sprite.create(s_menu, cc.rect(0, 244, 366, 122));
+        var aboutNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 244, 366, 122));
         aboutNormal.setContentSize(new cc.size(366, 122));
 
         newGameNormal.setPosition(384, 850);
@@ -33,8 +32,8 @@ var MainMenuLayer = cc.Layer.extend({
 
 		/* Add a Joystick to control movement. */
 		this.freewill.move = this.freewill.addJoystick({
-			imageBase: './images/tiles.png',						/* Irrelevant since we never see the Joystick. */
-			imagePad: './images/tiles.png',						/* Irrelevant since we never see the Joystick. */
+			imageBase: s_game_ball,						/* Irrelevant since we never see the Joystick. */
+			imagePad: s_game_ball,						/* Irrelevant since we never see the Joystick. */
 			fixed: true,														/* Joystick won't move. */
 			pos: [0.0, 0.0],													/* Irrelevant since we never see the Joystick. */
 			trigger: [0.0, 0.0, window.innerWidth / 2.0, window.innerHeight],	/* The touch area that triggers this Joystick will be the left half of the screen. */

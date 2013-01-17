@@ -15,12 +15,11 @@ var GameOverLayer = cc.Layer.extend({
         lbScore.setColor(cc.c3b(250,179,0));
         this.addChild(lbScore,10);
 
-        var s_menu = './images/buttons.png';
-        var replayNormal = cc.Sprite.create(s_menu, cc.rect(0, 366, 366, 122));
+        var replayNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 366, 366, 122));
         replayNormal.setContentSize(new cc.size(366, 122));
-        var menuNormal = cc.Sprite.create(s_menu, cc.rect(0, 488, 366, 122));
+        var menuNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 488, 366, 122));
         menuNormal.setContentSize(new cc.size(366, 122));
-        var helpNormal = cc.Sprite.create(s_menu, cc.rect(0, 610, 366, 122));
+        var helpNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 610, 366, 122));
         helpNormal.setContentSize(new cc.size(366, 122));
 
         replayNormal.setPosition(384, 850);

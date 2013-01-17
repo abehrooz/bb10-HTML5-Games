@@ -32,7 +32,7 @@ var GameLayer = cc.Layer.extend({
 
 
         /* Load our TMX-as-XML world. */
-        tmx = cc.TMXTiledMap.create('./tmx/0-0.xml');
+        tmx = cc.TMXTiledMap.create(s_tmx);
 
         var initialFloors = [];
         for (var i = -1000; i <= 250; i += 200) {
@@ -48,8 +48,8 @@ var GameLayer = cc.Layer.extend({
         this.bufferLoader = new BufferLoader(
             this.context,
             [
-                'music/filter-noise-2.wav',
-                'music/cardiod-true-stereo-15-8.wav'
+                s_game_ball_noise,
+                s_game_ball_hit
             ],
             _g.LayerStart.finishedLoading
         );
@@ -88,33 +88,18 @@ var GameLayer = cc.Layer.extend({
         });
 
         /* Load the scenery. */
-        this.background = cc.Sprite.create('./images/background.png');
+        this.background = cc.Sprite.create(s_game_bg);
 //		this.background.setAnchorPoint(new cc.Point(0.0, 0.0));
         this.background.setPosition(new cc.Point(384.0, 640.0));
         this.addChild(this.background, 0);
 
         /* Load the ball. */
-        this.ball = cc.Sprite.create('./images/ball_64.png');
+        this.ball = cc.Sprite.create(s_game_ball);
 //		this.ball.setAnchorPoint(new cc.Point(0.5, 0.5));
 //		this.ball.setPosition(new cc.Point(384.0, 840.0));
         this.ball.j = [];
         /* Will hold the impulse force acting on the ball. */
         this.addChild(this.ball, 2);
-
-        /* Load the coins. */
-//		this.coins = tmx.getObjectGroup('coins').getObjects();
-//		this.coins.sprites = [];
-//		for (n = 0; n < this.coins.length; n = n + 1) {
-//			this.coins.sprites.push(cc.Sprite.create('./images/tiles.png', new cc.Rect(32.0, 64.0, 32.0, 32.0)));
-//			this.coins.sprites[n].setPosition(
-//				new cc.Point(
-//					this.coins[n].x + this.coins[n].width / 2.0,
-//					this.coins[n].y + this.coins[n].height / 2.0
-//				)
-//			);
-////			this.addChild(this.coins.sprites[n], 3);
-//		}
-//		this.coins.sprites.count = this.coins.sprites.length;
 
         /* Load the floors. */
         this.floors = initialFloors;
@@ -122,7 +107,7 @@ var GameLayer = cc.Layer.extend({
         for (n = 0; n < this.floors.length; n = n + 1) {
             this.floors.sprites[n] = [];
             for (j = 0; j < this.floors[n].length; j++) {
-                this.floors.sprites[n].push(cc.Sprite.create('./images/wood-background.png', new cc.Rect(0.0, 0.0, this.floors[n][j].width, this.floors[n][j].height)));
+                this.floors.sprites[n].push(cc.Sprite.create(s_game_floors, new cc.Rect(0.0, 0.0, this.floors[n][j].width, this.floors[n][j].height)));
                 this.floors.sprites[n][j].setPosition(
                     new cc.Point(
                         this.floors[n][j].x + this.floors[n][j].width / 2.0,

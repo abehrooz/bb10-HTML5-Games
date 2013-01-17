@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" height="40" width="24" tileheight="32" tilewidth="32">
- <tileset firstgid="1" name="tiles" tileheight="32" tilewidth="32">
-  <image source="../images/tiles.png" height="96" width="96"/>
- </tileset>
- <layer name="Layer0" height="40" width="24">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC82W4QrAIAiEC0ax93/h/VkQYnZeIf4QWdvywzvbaimlJo83aWTk2/VvXtPy7p5Hr/6HxSbfYfmQGlYt5JrR3OPjUz7Wj1F8ml4Z+OSaJ2v7IP496d8DBOOLW/7znhPR/oviQ59nZoIJli+Czaq94mC07MX3XbL2WukouRmv3ZirKH2RfTwzdHs2Tvl2urM6nWiJ9CkDX4T/GA/c9KzH0yO3KeZ+NiWQs2VVB82PyBqHxTbelf8g2eMDKoV2CgAPAAA=
-  </data>
- </layer>
  <objectgroup name="walls" height="40" width="24">
   <object y="0" x="766" height="1280" width="2"/>
   <object y="0" x="0" height="1280" width="2"/>

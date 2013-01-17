@@ -25,10 +25,7 @@ var ccApplication = cc.Application.extend({
 		};
 
 		/* Initiate preloading; at minimum, this REQUIRES an [] argument. */
-		cc.Loader.getInstance().preload([
-			{type: 'tmx', src: './tmx/0-0.xml'},
-			{type: 'image', src: './images/tiles.png'}
-		]);
+		cc.Loader.getInstance().preload(g_resources);
 	},
 
 	applicationDidFinishLaunching: function () {
