@@ -14,8 +14,10 @@
 	</head>
 	<body>
 		<div id="freewill"></div>
+        <audio id="soundEfx" src="music/pop.wav" style="display: none;"></audio>
 		<canvas id="ccCanvas"></canvas>
 		<script type="text/javascript" src="./js/webworks-1.0.2.9.js"></script>
+		<!--<script type="text/javascript" src="./js/webworks-1.0.4.5.js"></script>-->
 		<script type="text/javascript">
 			/* Once WebWorks is ready, we will begin our Cocos2d-HTML5 initailization. */
 			function onwebworksready() {
@@ -33,11 +35,10 @@
 					appFiles: [
                         './js/Freewill.js',		/* Generic virtual controls. */
                         './js/RailFactory.js',  /*Helper class to create random rails*/
-						'./resources.js',
-						'./js/Effect.js',
 						'./js/GameOver.js',
 						'./js/MainMenu.js',
-						'./js/SceneStart.js'	/* Our primary layer. */
+						'./js/buffer-loader.js',
+						'./js/GameScene.js'	/* Our primary layer. */
 					]
 				};
 				script.src = script.c.engineDir + 'platform/jsloader.js';

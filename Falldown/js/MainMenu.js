@@ -64,7 +64,7 @@ var MainMenuLayer = cc.Layer.extend({
                     var scene = cc.Scene.create();
                     scene.addChild(new GameLayer());
 //                    scene.addChild(GameControlMenu.create());
-                    cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, scene));
+                    cc.Director.getInstance().replaceScene(cc.TransitionFade.create(0.4, scene));
                 } else if (spriteContainsPoint(gameSettingsNormal,touch)) {
                     console.log("game settings");
                 } else if (spriteContainsPoint(aboutNormal,touch)) {

@@ -5,11 +5,11 @@ importScripts('./Box2D.js');
 importScripts('./RailFactory.js');
 
 self.init = function (objects) {
-	var fixtureDef, bodyDef, object, n, j;
+	var fixtureDef, ballFixtureDef, bodyDef, object, n, j;
 
 	/* Our world. */
 	self.world = new Box2D.Dynamics.b2World(
-		new Box2D.Common.Math.b2Vec2(0.0, 17.8),	/* Gravity. */
+		new Box2D.Common.Math.b2Vec2(0.0, 18.6),	/* Gravity. */
 		true										/* Allow sleep. */
 	);
 	
@@ -21,9 +21,9 @@ self.init = function (objects) {
 
 	/* Global properties. */
 	fixtureDef				= new Box2D.Dynamics.b2FixtureDef();
-	fixtureDef.density		= 4.0;
+	fixtureDef.density		= 8.5;
 	fixtureDef.friction		= 0.1;
-	fixtureDef.restitution	= 0.1;
+	fixtureDef.restitution	= 0;
 	bodyDef					= new Box2D.Dynamics.b2BodyDef();
 
 	/* Generate our walls. */
@@ -34,7 +34,9 @@ self.init = function (objects) {
 		bodyDef.position.y		= -(object.y + object.height / 2.0) / self.world.scale;
 		fixtureDef.shape		= new Box2D.Collision.Shapes.b2PolygonShape();
 		fixtureDef.shape.SetAsBox(object.width / 2.0 / self.world.scale, object.height / 2.0 / self.world.scale);
-		self.world.CreateBody(bodyDef).CreateFixture(fixtureDef).SetUserData({});
+		self.world.CreateBody(bodyDef).CreateFixture(fixtureDef).SetUserData({
+            tagName: 'wall'
+        });
 	}
 
 	/* Add our floors. */
@@ -60,39 +62,53 @@ self.init = function (objects) {
 
 
 	/* Add a ball. */
+    ballFixtureDef				= new Box2D.Dynamics.b2FixtureDef();
+    ballFixtureDef.density		= 2.3;
+    ballFixtureDef.friction		= 0.5;
+    ballFixtureDef.restitution	= 0.3;
 	bodyDef.type			= Box2D.Dynamics.b2Body.b2_dynamicBody;
 	bodyDef.position.x		= 576 / self.world.scale;
-	bodyDef.position.y		= -32 / self.world.scale;
-	fixtureDef.shape		= new Box2D.Collision.Shapes.b2CircleShape(64.0 / 2.0 / self.world.scale);
+	bodyDef.position.y		= -1100 / self.world.scale;
+    ballFixtureDef.shape		= new Box2D.Collision.Shapes.b2CircleShape(64.0 / 2.0 / self.world.scale);
 	self.ball = self.world.CreateBody(bodyDef);
-	self.ball.CreateFixture(fixtureDef).SetUserData({});
+	self.ball.CreateFixture(ballFixtureDef).SetUserData({});
 	self.ball.j = [];
+    self.ball.h = false;
 
-//	/* Collision listener for coins, portals, etc. */
-//	self.listener = new Box2D.Dynamics.b2ContactListener();
-//	self.listener.BeginContact = function (contact) {
-//		/* If there is a collision, find if one of the objects is a coin and, if so, remove that coin. */
-//		if (contact.m_fixtureB.GetUserData().tagName === 'coin') {
-//			self.remove.push(contact.m_fixtureB.GetBody());
-//			self.postMessage({
-//				msg: 'remove',
-//				index: contact.m_fixtureB.GetUserData().index
-//			});
-//		} else if (contact.m_fixtureA.GetUserData().tagName === 'coin') {
-//			self.remove.push(contact.m_fixtureA.GetBody());
-//			self.postMessage({
-//				msg: 'remove',
-//				index: contact.m_fixtureA.GetUserData().index
-//			});
-//		}
-//
-//	};
-//	self.listener.EndContact = function () {
-//	};
-//	self.world.SetContactListener(self.listener);
+
+    /* Collision listener for coins, portals, etc. */
+    self.collision = [];
+    self.listener = new Box2D.Dynamics.b2ContactListener();
+    self.listener.BeginContact = function (contact) {
+
+        if (contact.m_fixtureA.GetUserData().tagName === 'floor' || contact.m_fixtureB.GetUserData().tagName === 'floor'){
+            var body1 = contact.m_fixtureA.GetBody();
+            var body2 = contact.m_fixtureB.GetBody();
+
+            var v1 = body1.GetLinearVelocity().Length();
+            var v2 = body2.GetLinearVelocity().Length();
+            var x = v1 > v2 ? body1.GetPosition().x : body2.GetPosition().x;
+            var y = body1.GetPosition().y;
+
+            self.postMessage({
+                collision: {
+                    x: x * self.world.scale,
+                    y: -y * self.world.scale,
+                    v: v1 > v2 ? v1: v2
+                }
+            });
+
+        }
+
+    };
+    self.listener.EndContact = function () {
+        /* Keep track of how many collisions are currently in effect for jumping purposes. */
+//        self.hero.contacts--;
+    };
+    self.world.SetContactListener(self.listener);
 
 	setInterval(self.update, 0.0167);	/* Update the physics 60 times per second. */
-	setInterval(self.cleanup, 0.0111);  /* Check for object removal 90 times per second. */
+	setInterval(self.cleanup, 0.0411);  /* Check for object removal 90 times per second. */
 };
 
 self.update = function () {
@@ -169,7 +185,7 @@ self.update = function () {
                 r: self.floors[n][j].GetAngle()};
         }
         if (newRow){
-            self.score += 500;
+            self.score += 1;
         }
     }
 
@@ -198,8 +214,23 @@ self.update = function () {
         score: self.score
     });
 
+    self.ball.h = false;
+
 
 };
+
+self.finishedLoading = function(bufferList) {
+    // Create two sources and play them both together.
+    var source1 = self.context.createBufferSource();
+    var source2 = self.context.createBufferSource();
+    source1.buffer = bufferList[0];
+    source2.buffer = bufferList[1];
+
+    source1.connect(self.context.destination);
+    source2.connect(self.context.destination);
+    source1.noteOn(0);
+    source2.noteOn(0);
+}
 
 self.cleanup = function () {
     var n;

@@ -12,6 +12,8 @@ var ccApplication = cc.Application.extend({
 		document.querySelector('#Cocos2dGameContainer').style.position = 'fixed';
 		document.querySelector('#ccCanvas').style.position = 'fixed';
 
+        cc.AudioEngine.getInstance().init();
+
 		/* Display the default scene during load. */
 		cc.Loader.getInstance().onloading = function () {
 			cc.LoaderScene.getInstance().draw();
