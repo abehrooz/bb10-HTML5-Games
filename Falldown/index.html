@@ -14,10 +14,14 @@
 	</head>
 	<body>
 		<div id="freewill"></div>
-        <audio id="soundEfx" src="music/pop.wav" style="display: none;"></audio>
+        <div id="preventSleep" hidden="hidden">
+            <video id="preventSleepVideo" src="res/music/fish_frenzy_clip.m4v" loop="loop" preload="true"></video>
+        </div>
+        <audio id="gameMusic" src="res/music/game_bg_GreenCats.mp3" loop="loop" preload="true"></audio>
+        <audio id="menuMusic" src="res/music/menu_bg_FogOfPeace.mp3" loop="loop" preload="true"></audio>
 		<canvas id="ccCanvas"></canvas>
-		<script type="text/javascript" src="./js/webworks-1.0.2.9.js"></script>
-		<!--<script type="text/javascript" src="./js/webworks-1.0.4.5.js"></script>-->
+		<!--<script type="text/javascript" src="./js/webworks-1.0.2.9.js"></script>-->
+		<script type="text/javascript" src="./js/webworks-1.0.4.5.js"></script>
 		<script type="text/javascript">
 			/* Once WebWorks is ready, we will begin our Cocos2d-HTML5 initailization. */
 			function onwebworksready() {
@@ -34,11 +38,11 @@
 						'./cocos/cocos2d/',		/* Location of the cocos2d framework. */
 					appFiles: [
                         './resources.js',
+                        './js/GameConfig.js',
                         './js/Freewill.js',		/* Generic virtual controls. */
                         './js/RailFactory.js',  /*Helper class to create random rails*/
 						'./js/GameOver.js',
 						'./js/MainMenu.js',
-						'./js/buffer-loader.js',
 						'./js/GameScene.js'	/* Our primary layer. */
 					]
 				};

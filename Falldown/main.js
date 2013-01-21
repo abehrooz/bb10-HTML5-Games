@@ -30,7 +30,7 @@ var ccApplication = cc.Application.extend({
 
 	applicationDidFinishLaunching: function () {
 		var director = cc.Director.getInstance();
-		director.setDisplayStats(true); /* Show FPS information? */
+//		director.setDisplayStats(true); /* Show FPS information? */
 		director.runWithScene(new this.startScene());
 		return true;
 	}

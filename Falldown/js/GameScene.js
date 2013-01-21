@@ -23,8 +23,6 @@ var GameLayer = cc.Layer.extend({
         var tmx, n, j;
         var nextRail = new RandomRail(5887);
 
-//        this.ballSoundEfx = window.document.getElementById("soundEfx");
-
         /* Always call _super() first. */
         this._super();
         _g.LayerStart = this;
@@ -41,41 +39,71 @@ var GameLayer = cc.Layer.extend({
         ;
 
 
-
-//        var bufferLoader;
-        this.context = new webkitAudioContext();
-
-        this.bufferLoader = new BufferLoader(
-            this.context,
-            [
-                s_game_ball_noise,
-                s_game_ball_hit
-            ],
-            _g.LayerStart.finishedLoading
-        );
-
-        this.bufferLoader.load();
-
-        this.convolver = this.context.createConvolver();
-        this.convolver.connect(this.context.destination);
-//        this.convolver.buffer = this.bufferLoader.bufferList[1];
-
-        pingBuffer = 0;
-//        _g.LayerStart.loadPing('music/filter-noise-2.wav');
-//        _g.LayerStart.loadImpulseResponse('music/cardiod-true-stereo-15-8.wav');
-
-
-
-
-
+////        var bufferLoader;
+//
+//        if (typeof AudioContext == "function") {
+//            this.context = new AudioContext();
+//        } else if (typeof webkitAudioContext == "function") {
+//            this.context = new webkitAudioContext();
+//        }
+//        if (this.context) {
+//            this.bufferLoader = new BufferLoader(
+//                this.context,
+//                [
+//                    s_game_ball_noise,
+//                    s_game_ball_hit
+//                ]
+//            );
+//
+//            this.bufferLoader.load();
+//
+////        this.convolver = this.context.createConvolver();
+////        this.convolver.connect(this.context.destination);
+////        this.convolver.buffer = this.bufferLoader.bufferList[1];
+//
+//            pingBuffer = 0;
+//        }
         var winSize = cc.Director.getInstance().getWinSize();
 
         // score
-        this.lbScore = cc.LabelTTF.create("Score: 0", "Arial Bold", 28, cc.SizeMake(400, 28), cc.TEXT_ALIGNMENT_LEFT);
+        this.lbScore = cc.LabelTTF.create("Score: 0", "Arial Bold", 48, cc.SizeMake(400, 28), cc.TEXT_ALIGNMENT_LEFT);
         this.lbScore.setAnchorPoint(cc.p(1, 0));
         this.addChild(this.lbScore, 1000);
         this.lbScore.setPosition(cc.p(420, winSize.height - 30));
 
+        // pause button
+//        this.pauseButton = cc.Sprite.create(s_game_pause, cc.rect(0, 0, 64, 64));
+//        this.pauseButton.setContentSize(new cc.size(64, 64));
+//        this.lbScore.setAnchorPoint(cc.p(1, 0));
+//        this.addChild(this.pauseButton, 1000);
+//        this.pauseButton.setPosition(cc.p(720, winSize.height - 34));
+
+
+        /* Load freewill. */
+        this.freewill = new Freewill({
+            container: document.querySelector('#freewill')
+        });
+
+        this.freewill.pause = this.freewill.addJoystick({
+            imageBase: s_game_ball,						/* Irrelevant since we never see the Joystick. */
+            imagePad: s_game_ball,						/* Irrelevant since we never see the Joystick. */
+            fixed: true,														/* Joystick won't move. */
+            pos: [0.0, 0.0],													/* Irrelevant since we never see the Joystick. */
+            trigger: [0.0, 0.0, window.innerWidth, window.innerHeight],	/* The touch area that triggers this Joystick will be the left half of the screen. */
+            opacLow: 0.0,														/* Lowest opacity is 0; invisible. */
+            opacHigh: 0.0														/* Highest opacity is 0; invisible. */
+        });
+
+        this.freewill.pause.onTouchStart = function () {
+            if (_g.LayerStart.running) {
+                if (!_g.LayerStart.paused) {
+                    _g.LayerStart.onPause();
+                } else {
+                    _g.LayerStart.onResume();
+                }
+            }
+
+		};
 
         /* Initialize our Web Worker. */
         this.physics = new Worker('./js/Box2dWebWorker.js');
@@ -169,6 +197,24 @@ var GameLayer = cc.Layer.extend({
 
         });
 
+        this.preventSleepVideo = window.document.getElementById("preventSleepVideo");
+        this.preventSleepVideo.volume = 0;
+        this.preventSleepVideo.play();
+        this.musicIndex = 0;
+        this.gameMusic = window.document.getElementById("gameMusic");
+//        window.document.getElementById('gameMusic').addEventListener('ended', function(){
+//            this.currentTime = 0;
+//        }, false);
+        this.gameMusic.volume = 0.6;
+        this.gameMusic.currentTime = 1.0;
+        this.gameMusic.loop = true;
+        this.gameMusic.play();
+        console.log("Current time = " + this.gameMusic.currentTime);
+
+
+        this.running = true;
+        this.paused = false;
+
 //        cc.Director.getInstance().popToRootScene();
 
         /* Every frame, we will update the Web Worker with the current forces acting on our ball based on user input. */
@@ -176,121 +222,119 @@ var GameLayer = cc.Layer.extend({
         return true;
     },
 
+// Play Audio effects. Commented out because HTML5 Audio API is not supported!!
 
-    finishedLoading:function (bufferList) {
-        // Create two sources and play them both together.
-        var source1 = this.context.createBufferSource();
-        var source2 = this.context.createBufferSource();
-        source1.buffer = bufferList[0];
-        source2.buffer = bufferList[1];
-
-        source1.connect(this.context.destination);
-        source2.connect(this.context.destination);
-        source1.noteOn(0);
-        source2.noteOn(0);
-    },
-
-
-//    loadPing:function (url) {
-//        // Load asynchronously
-//        var request = new XMLHttpRequest();
-//        request.open("GET", url, true);
-//        request.responseType = "arraybuffer";
+//    playCollisionSound:function (gain, xx, x, y) {
+//        console.log("CountContact is called.");
+//        if (this.context) {
+//            var ping = this.context.createBufferSource();
+//            ping.buffer = this.bufferLoader.bufferList[0];
+////        ping.connect(this.context.destination);
+//            if (ping) {
+//                console.log("gain = " + gain);
+//                var isQuiet = (gain < 0.01);
+////            ping.buffer = pingBuffer; // isQuiet ? quietBuffer : pingBuffer;
 //
-//        request.onload = function () {
-//            _g.LayerStart.pingBuffer = _g.LayerStart.context.createBuffer(request.response, true);
+//                var filter = this.context.createBiquadFilter();
+//                var panner = this.context.createPanner();
+//                panner.panningModel = webkitAudioPannerNode.HRTF;
+//
+//                // Create inputs to dry/wet mixers
+//                var dryGainNode = this.context.createGainNode();
+//                var wetGainNode = this.context.createGainNode();
+//                wetGainNode.gain.value = gain < 0.125 ? 0.15 : 0.1;
+//                wetGainNode.gain.value = 0.0;
+//                dryGainNode.gain.value = isQuiet ? 0.0 : gain;  //isQuiet ? 0.0 : gain;
+//
+//                ping.connect(dryGainNode);
+//                filter.connect(panner);
+//                panner.connect(dryGainNode);
+//                dryGainNode.connect(this.context.destination);
+//
+//                panner.connect(wetGainNode);
+////            wetGainNode.connect(this.convolver);
+//
+//                // Randomize pitch
+//                var r = Math.random();
+//                var cents = 600.0 * (r - 0.5);
+//                var rate = Math.pow(2.0, cents / 1200.0);
+//                ping.playbackRate.value = rate;
+//
+//                // Adjust filter
+//                filter.type = 0
+//                var value = 0.5 + 0.5 * xx;
+//                var noctaves = Math.log(22050.0 / 40.0) / Math.LN2;
+//                var v2 = Math.pow(2.0, noctaves * (value - 1.0));
+//
+//                var sampleRate = 44100.0;
+//                var nyquist = sampleRate * 0.5;
+//                filter.frequency.value = v2 * nyquist;
+////            filter.resonance.value = 10.0 /*5.0*/;
+//
+//                var azimuth = 0.5 * Math.PI * (x - 200.0 /*250.0*/) / 150.0;
+//                if (azimuth < -0.5 * Math.PI) azimuth = -0.5 * Math.PI;
+//                if (azimuth > 0.5 * Math.PI) azimuth = 0.5 * Math.PI;
+//
+//                var posX = 10.0 * Math.sin(azimuth);
+//                var posZ = 10.0 * Math.cos(azimuth);
+//
+//                var elevation = -0.5 * Math.PI * (y - 250.0) / 150.0;
+//                if (elevation < -0.5 * Math.PI) elevation = -0.5 * Math.PI;
+//                if (elevation > 0.5 * Math.PI) elevation = 0.5 * Math.PI;
+//
+//                var scaleY = Math.sin(elevation);
+//                var scaleXZ = Math.cos(elevation);
+//                posX *= scaleXZ;
+//                posZ *= scaleXZ;
+//                var posY = scaleY * 10.0;
+//
+//                panner.setPosition(posX, posY /*0*/, isQuiet ? +posZ : -posZ);
+//
+//                ping.noteOn(0);
+//            }
+//
+//        }else{
+//
+////            cc.AudioEngine.getInstance().stopMusic(false);
+////            cc.AudioEngine.getInstance().stopAllEffects();
+////            cc.AudioEngine.getInstance().playMusic(s_game_bgMusic);
+//
+//            var effect = window.document.getElementById("gameMusic");
+//            effect.currentTime = 0;
+//            effect.play();
 //        }
-//
-//        request.send();
 //    },
-//
-//    loadImpulseResponse:function (url) {
-//        // Load impulse response asynchronously
-//        var request = new XMLHttpRequest();
-//        request.open("GET", url, true);
-//        request.responseType = "arraybuffer";
-//
-//        request.onload = function () {
-//            _g.LayerStart.convolver.buffer = _g.LayerStart.context.createBuffer(request.response, false);
-//        }
-//
-//        request.send();
-//    },
-
-    playCollisionSound:function(gain, xx, x, y) {
-        console.log("CountContact is called.");
-        var ping = this.context.createBufferSource();
-        ping.buffer = this.bufferLoader.bufferList[0];
-//        ping.connect(this.context.destination);
-        if (ping) {
-            console.log("gain = " + gain);
-            var isQuiet = (gain < 0.01);
-//            ping.buffer = pingBuffer; // isQuiet ? quietBuffer : pingBuffer;
-
-            var filter = this.context.createBiquadFilter();
-            var panner = this.context.createPanner();
-            panner.panningModel = webkitAudioPannerNode.HRTF;
-
-            // Create inputs to dry/wet mixers
-            var dryGainNode = this.context.createGainNode();
-            var wetGainNode = this.context.createGainNode();
-            wetGainNode.gain.value = gain < 0.125 ? 0.15 : 0.1;
-            wetGainNode.gain.value = 0.0;
-            dryGainNode.gain.value = isQuiet? 0.0: gain;  //isQuiet ? 0.0 : gain;
-
-            ping.connect(dryGainNode);
-            filter.connect(panner);
-            panner.connect(dryGainNode);
-            dryGainNode.connect(this.context.destination);
-
-            panner.connect(wetGainNode);
-            wetGainNode.connect(this.convolver);
-
-            // Randomize pitch
-            var r = Math.random();
-            var cents = 600.0 * (r - 0.5);
-            var rate = Math.pow(2.0, cents / 1200.0);
-            ping.playbackRate.value = rate;
-
-            // Adjust filter
-            filter.type = 0
-            var value = 0.5 + 0.5 * xx;
-            var noctaves = Math.log(22050.0 / 40.0) / Math.LN2;
-            var v2 = Math.pow(2.0, noctaves * (value - 1.0));
-
-            var sampleRate = 44100.0;
-            var nyquist = sampleRate * 0.5;
-            filter.frequency.value  = v2 * nyquist;
-//            filter.resonance.value = 10.0 /*5.0*/;
-
-            var azimuth = 0.5*Math.PI * (x - 200.0 /*250.0*/) / 150.0;
-            if (azimuth < -0.5*Math.PI) azimuth = -0.5*Math.PI;
-            if (azimuth > 0.5*Math.PI) azimuth = 0.5*Math.PI;
-
-            var posX = 10.0 * Math.sin(azimuth);
-            var posZ = 10.0 * Math.cos(azimuth);
-
-            var elevation = -0.5*Math.PI * (y - 250.0) / 150.0;
-            if (elevation < -0.5*Math.PI) elevation = -0.5*Math.PI;
-            if (elevation > 0.5*Math.PI) elevation = 0.5*Math.PI;
-
-            var scaleY = Math.sin(elevation);
-            var scaleXZ = Math.cos(elevation);
-            posX *= scaleXZ;
-            posZ *= scaleXZ;
-            var posY = scaleY * 10.0;
-
-            panner.setPosition(posX, posY /*0*/, isQuiet ? +posZ : -posZ);
-
-            ping.noteOn(0);
-        }
-    },
 
     onGameOver:function () {
         this.physics.terminate();
+        this.gameMusic.pause();
+        this.gameMusic.currentTime = 0;
+        this.running = false;
+        this.preventSleepVideo.pause();
         var scene = cc.Scene.create();
         scene.addChild(new GameOverLayer());
         cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, scene));
+    },
+
+    onPause:function(){
+        this.physics.postMessage({
+            msg:'pause'
+        });
+        this.gameMusic.pause();
+        this.paused = true;
+    },
+
+    onResume:function(){
+        this.physics.postMessage({
+            msg:'resume'
+        });
+        this.musicIndex++;
+        if (this.musicIndex>= 9){
+            this.musicIndex = 0;
+        }
+//        this.gameMusic.src = window.document.getElementsByTagName("audio")[this.musicIndex];
+        this.gameMusic.play();
+        this.paused = false;
     },
 
     update:function () {
