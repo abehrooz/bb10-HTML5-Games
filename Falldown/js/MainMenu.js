@@ -7,20 +7,44 @@ var MainMenuLayer = cc.Layer.extend({
     init:function () {
         this._super();
         this._isTouchEnabled = true;
-        var newGameNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 0, 366, 122));
-        newGameNormal.setContentSize(new cc.size(366, 122));
-        var gameSettingsNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 122, 366, 122));
-        gameSettingsNormal.setContentSize(new cc.size(366, 122));
-        var aboutNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 244, 366, 122));
-        aboutNormal.setContentSize(new cc.size(366, 122));
 
-        newGameNormal.setPosition(384, 850);
-        gameSettingsNormal.setPosition(384, 650);
-        aboutNormal.setPosition(384, 450);
+
+        /* Load the scenery. */
+        this.background = cc.Sprite.create(s_menu_bg);
+        this.background.setPosition(new cc.Point(384.0, 640.0));
+        this.addChild(this.background, 0);
+
+        /* Load the scenery. */
+        this.background = cc.Sprite.create(s_menu_logo);
+        this.background.setPosition(new cc.Point(384.0, 1040.0));
+        this.addChild(this.background, 0);
+
+        var newGameNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 0, 440, 140));
+        newGameNormal.setContentSize(new cc.size(440, 140));
+        var highScoresNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 140, 440, 140));
+        highScoresNormal.setContentSize(new cc.size(440, 140));
+        var gameSettingsNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 280, 440, 140));
+        gameSettingsNormal.setContentSize(new cc.size(440, 140));
+        var helpNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 420, 440, 140));
+        helpNormal.setContentSize(new cc.size(440, 140));
+        var aboutNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 560, 440, 140));
+        aboutNormal.setContentSize(new cc.size(440, 140));
+        var settingsNormal = cc.Sprite.create(s_menu_buttons_settings, cc.rect(0, 0, 440, 140));
+        settingsNormal.setContentSize(new cc.size(440, 140));
+
+        newGameNormal.setPosition(384, 800);
+        highScoresNormal.setPosition(384, 675);
+        gameSettingsNormal.setPosition(384, 550);
+        helpNormal.setPosition(384, 425);
+//        aboutNormal.setPosition(384, 300);
+        settingsNormal.setPosition(384, 304);
 
         this.addChild(newGameNormal, 1);
+        this.addChild(highScoresNormal, 1);
         this.addChild(gameSettingsNormal, 1);
-        this.addChild(aboutNormal, 1);
+        this.addChild(helpNormal, 1);
+//        this.addChild(aboutNormal, 1);
+        this.addChild(settingsNormal, 1);
 
 
 

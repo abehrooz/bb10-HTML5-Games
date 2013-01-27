@@ -10,25 +10,41 @@ var GameOverLayer = cc.Layer.extend({
         this._super();
         this._isTouchEnabled = true;
 
+        /* Load the scenery. */
+        this.background = cc.Sprite.create(s_menu_bg);
+        this.background.setPosition(new cc.Point(384.0, 640.0));
+        this.addChild(this.background, 0);
+
+        /* Load the scenery. */
+        this.background = cc.Sprite.create(s_menu_gameover);
+        this.background.setPosition(new cc.Point(384.0, 1040.0));
+        this.addChild(this.background, 0);
+
+
         var lbScore = cc.LabelTTF.create("Your Score: "+_g.score,"Arial Bold",48);
-        lbScore.setPosition(cc.p(384,1050));
+        lbScore.setPosition(cc.p(384,875));
         lbScore.setColor(cc.c3b(250,179,0));
         this.addChild(lbScore,10);
 
-        var replayNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 366, 366, 122));
-        replayNormal.setContentSize(new cc.size(366, 122));
-        var menuNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 488, 366, 122));
-        menuNormal.setContentSize(new cc.size(366, 122));
-        var helpNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 610, 366, 122));
-        helpNormal.setContentSize(new cc.size(366, 122));
+        var playAgainNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 700, 440, 140));
+        playAgainNormal.setContentSize(new cc.size(440, 140));
+        var highScoresNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 140, 440, 140));
+        highScoresNormal.setContentSize(new cc.size(440, 140));
+        var menuNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 980, 440, 140));
+        menuNormal.setContentSize(new cc.size(440, 140));
+        var settingsNormal = cc.Sprite.create(s_menu_buttons_settings, cc.rect(0, 0, 440, 140));
+        settingsNormal.setContentSize(new cc.size(440, 140));
 
-        replayNormal.setPosition(384, 850);
-        menuNormal.setPosition(384, 650);
-        helpNormal.setPosition(384, 450);
 
-        this.addChild(replayNormal, 1);
+        playAgainNormal.setPosition(384, 700);
+        highScoresNormal.setPosition(384, 575);
+        menuNormal.setPosition(384, 450);
+        settingsNormal.setPosition(384, 329);
+
+        this.addChild(playAgainNormal, 1);
+        this.addChild(highScoresNormal, 1);
         this.addChild(menuNormal, 1);
-        this.addChild(helpNormal, 1);
+        this.addChild(settingsNormal, 1);
 
         function spriteContainsPoint(sprite, touch) {
             var x = touch.pageX;
@@ -46,7 +62,7 @@ var GameOverLayer = cc.Layer.extend({
             if (event.targetTouches.length == 1) {
                 var touch = event.targetTouches[0];
                 console.log(touch.pageY);
-                if (spriteContainsPoint(replayNormal,touch)) {
+                if (spriteContainsPoint(playAgainNormal,touch)) {
                     console.log("new game");
                     window.document.removeEventListener('touchstart', arguments.callee, false);
                     var scene = cc.Scene.create();

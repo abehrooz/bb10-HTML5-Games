@@ -202,14 +202,11 @@ var GameLayer = cc.Layer.extend({
         this.preventSleepVideo.play();
         this.musicIndex = 0;
         this.gameMusic = window.document.getElementById("gameMusic");
-//        window.document.getElementById('gameMusic').addEventListener('ended', function(){
-//            this.currentTime = 0;
-//        }, false);
         this.gameMusic.volume = 0.6;
-        this.gameMusic.currentTime = 1.0;
         this.gameMusic.loop = true;
         this.gameMusic.play();
-        console.log("Current time = " + this.gameMusic.currentTime);
+//        this.gameMusic.currentTime = 1.0;
+//        console.log("Current time = " + this.gameMusic.currentTime);
 
 
         this.running = true;
@@ -344,4 +341,11 @@ var GameLayer = cc.Layer.extend({
         });
     }
 
+});
+
+var GameScene = cc.Scene.extend({
+    onEnter: function () {
+        this._super();
+        this.addChild(new GameLayer());
+    }
 });

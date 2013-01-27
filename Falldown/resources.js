@@ -11,8 +11,11 @@ if( cc.config.deviceType == 'browser') {
 var s_game_bg = dirImg + "game_bg.png";
 var s_game_floors = dirImg + "game_floor.png";
 var s_game_ball = dirImg + "game_ball.png";
-var s_game_pause = dirImg + "game_pause_64.png";
+var s_menu_bg = dirImg + "menu_bg.png";
+var s_menu_logo = dirImg + "menu_logo.png";
+var s_menu_gameover = dirImg + "menu_gameover.png";
 var s_menu_buttons = dirImg + "menu_buttons.png";
+var s_menu_buttons_settings = dirImg + "menu_buttons_settings.png";
 
 //music
 var s_game_bgMusic = dirMusic + "game_bg_AngryMod.mp3" ;
@@ -32,7 +35,11 @@ var g_resources = [
     {type:"image", src:s_game_ball},
     {type:"image", src:s_game_floors},
     {type:"image", src:s_game_bg},
+    {type:"image", src:s_menu_bg},
     {type:"image", src:s_menu_buttons},
+    {type:"image", src:s_menu_buttons_settings},
+    {type:"image", src:s_menu_logo},
+    {type:"image", src:s_menu_gameover},
 
     //tmx
     {type:"tmx", src:s_tmx},

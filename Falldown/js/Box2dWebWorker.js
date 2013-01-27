@@ -177,7 +177,7 @@ self.update = function () {
 
         for (j = 0 ; j<this.floors[n].length; j++ ){
             b2Transform.Initialize(new Box2D.Common.Math.b2Vec2( xShift + self.floors[n][j].GetPosition().x,
-                ( newRow)? 0: self.floors[n][j].GetPosition().y - 0.055),
+                ( newRow)? 0: self.floors[n][j].GetPosition().y - 0.06),
                 Box2D.Common.Math.b2Mat22.FromAngle(0));
             self.floors[n][j].SetTransform(b2Transform);
             floors[n][j] = {
