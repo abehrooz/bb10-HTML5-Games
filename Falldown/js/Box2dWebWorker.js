@@ -112,7 +112,6 @@ self.init = function (objects) {
 };
 
 self.update = function () {
-    if (!self.world.pause){
     var n, j;
     /* Apply the horizontal and vertical impulse forces to our ball. */
     self.ball.ApplyImpulse(
@@ -177,7 +176,7 @@ self.update = function () {
 
         for (j = 0 ; j<this.floors[n].length; j++ ){
             b2Transform.Initialize(new Box2D.Common.Math.b2Vec2( xShift + self.floors[n][j].GetPosition().x,
-                ( newRow)? 0: self.floors[n][j].GetPosition().y - 0.06),
+                ( newRow)? 0: self.floors[n][j].GetPosition().y - (self.world.pause ? 0 : 0.06)),
                 Box2D.Common.Math.b2Mat22.FromAngle(0));
             self.floors[n][j].SetTransform(b2Transform);
             floors[n][j] = {
@@ -191,13 +190,10 @@ self.update = function () {
     }
 
     /* Process the physics for this tick. */
-    if (!self.world.pause){
-        self.world.Step(
-            0.0167,	/* Frame rate. */
-            20,		/* Velocity iterations. */
-            20		/* Position iterations. */
-        );
-    }
+    self.world.Step( self.world.pause ? 0: 0.0167,	/* Frame rate. */
+        20,		/* Velocity iterations. */
+        20		/* Position iterations. */
+    );
 
 
     /* Reset any forces. */
@@ -218,9 +214,6 @@ self.update = function () {
     });
 
     self.ball.h = false;
-
-    }
-
 };
 
 self.cleanup = function () {
@@ -243,7 +236,7 @@ self.addEventListener('message', function (e) {
         self.world.pause = true;
     } else if (e.data.msg === 'resume'){
         self.world.pause = false;
-        self.world.step(null);
+//        self.world.Step(0);
     }
 });
 

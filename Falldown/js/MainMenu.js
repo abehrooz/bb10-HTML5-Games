@@ -1,4 +1,3 @@
-var TAG_MENU = 77771;
 var MainMenuLayer = cc.Layer.extend({
     ctor:function() {
         cc.associateWithNative( this, cc.Layer );
@@ -9,13 +8,13 @@ var MainMenuLayer = cc.Layer.extend({
         this._isTouchEnabled = true;
 
 
-        /* Load the scenery. */
+        /* Load the Background. */
         this.background = cc.Sprite.create(s_menu_bg);
         this.background.setPosition(new cc.Point(384.0, 640.0));
         this.addChild(this.background, 0);
 
-        /* Load the scenery. */
-        this.background = cc.Sprite.create(s_menu_logo);
+        /* Load the Game Logo. */
+        this.background = cc.Sprite.create(s_menu_labels, cc.rect(0, 0, 570, 150));
         this.background.setPosition(new cc.Point(384.0, 1040.0));
         this.addChild(this.background, 0);
 
@@ -72,7 +71,7 @@ var MainMenuLayer = cc.Layer.extend({
             var minX = sprite.getPosition().x - sprite.getContentSize().width / 2;
             var maxY = sprite.getPosition().y + sprite.getContentSize().height / 2;
             var minY = sprite.getPosition().y - sprite.getContentSize().height / 2;
-            console.log(x,",",y,",", minX,",", maxX,",",minY, ",", maxX );
+//            console.log(x,",",y,",", minX,",", maxX,",",minY, ",", maxX );
             return maxX >= x && x >= minX &&
                 maxY >= y && y >= minY;
         }
@@ -80,13 +79,13 @@ var MainMenuLayer = cc.Layer.extend({
         window.document.addEventListener('touchstart', function (){
             if (event.targetTouches.length == 1) {
                 var touch = event.targetTouches[0];
-                console.log(touch.pageY);
+//                console.log(touch.pageY);
                 if (spriteContainsPoint(newGameNormal,touch)) {
-                    console.log("new game");
+//                    console.log("new game");
                     window.document.removeEventListener('touchstart', arguments.callee, false);
                     var scene = cc.Scene.create();
-                    scene.addChild(new GameLayer());
-//                    scene.addChild(GameControlMenu.create());
+                    scene.addChild(new GameLayer(), 10, 10);
+                    scene.addChild(new PauseLayer(), 100, 100);
                     cc.Director.getInstance().replaceScene(cc.TransitionFade.create(0.4, scene));
                 } else if (spriteContainsPoint(gameSettingsNormal,touch)) {
                     console.log("game settings");

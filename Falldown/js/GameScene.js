@@ -2,6 +2,7 @@
 
 /* Global namespace for communicating with the Web Worker. */
 var _g = {
+    LayerPause: null,
     LayerStart:null,
     score:null
 };
@@ -99,7 +100,7 @@ var GameLayer = cc.Layer.extend({
                 if (!_g.LayerStart.paused) {
                     _g.LayerStart.onPause();
                 } else {
-                    _g.LayerStart.onResume();
+//                    _g.LayerStart.onResume();
                 }
             }
 
@@ -182,7 +183,6 @@ var GameLayer = cc.Layer.extend({
                 _g.score = e.data.score;
             }
             if (e.data.collision) {
-                console.log(e.data.collision);
                 // base volume on velocity
                 var xx = e.data.collision.v / 80.0; //200.0;
 
@@ -308,30 +308,28 @@ var GameLayer = cc.Layer.extend({
         this.gameMusic.currentTime = 0;
         this.running = false;
         this.preventSleepVideo.pause();
-        var scene = cc.Scene.create();
-        scene.addChild(new GameOverLayer());
-        cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, scene));
+        cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2, new GameOverScene()));
     },
 
     onPause:function(){
+//        console.log("Pausing the game");
         this.physics.postMessage({
             msg:'pause'
         });
         this.gameMusic.pause();
         this.paused = true;
+        _g.LayerPause.setVisible(true);
     },
 
     onResume:function(){
+//        console.log("Resuming the game");
         this.physics.postMessage({
             msg:'resume'
         });
-        this.musicIndex++;
-        if (this.musicIndex>= 9){
-            this.musicIndex = 0;
-        }
 //        this.gameMusic.src = window.document.getElementsByTagName("audio")[this.musicIndex];
         this.gameMusic.play();
         this.paused = false;
+
     },
 
     update:function () {
@@ -341,11 +339,4 @@ var GameLayer = cc.Layer.extend({
         });
     }
 
-});
-
-var GameScene = cc.Scene.extend({
-    onEnter: function () {
-        this._super();
-        this.addChild(new GameLayer());
-    }
 });

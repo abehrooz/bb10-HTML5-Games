@@ -12,8 +12,7 @@ var s_game_bg = dirImg + "game_bg.png";
 var s_game_floors = dirImg + "game_floor.png";
 var s_game_ball = dirImg + "game_ball.png";
 var s_menu_bg = dirImg + "menu_bg.png";
-var s_menu_logo = dirImg + "menu_logo.png";
-var s_menu_gameover = dirImg + "menu_gameover.png";
+var s_menu_labels = dirImg + "menu_labels.png";
 var s_menu_buttons = dirImg + "menu_buttons.png";
 var s_menu_buttons_settings = dirImg + "menu_buttons_settings.png";
 
@@ -38,8 +37,7 @@ var g_resources = [
     {type:"image", src:s_menu_bg},
     {type:"image", src:s_menu_buttons},
     {type:"image", src:s_menu_buttons_settings},
-    {type:"image", src:s_menu_logo},
-    {type:"image", src:s_menu_gameover},
+    {type:"image", src:s_menu_labels},
 
     //tmx
     {type:"tmx", src:s_tmx},
