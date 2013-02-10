@@ -73,8 +73,6 @@ var GameOverLayer = cc.Layer.extend({
 //                    console.log("going back to main menu");
                     window.document.removeEventListener('touchstart', arguments.callee, false);
                     cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,new MainMenuScene()));
-                } else if (spriteContainsPoint(helpNormal,touch)) {
-                    console.log("about");
                 }
             }
         }, false);

@@ -14,6 +14,7 @@ var s_game_ball = dirImg + "game_ball.png";
 var s_menu_bg = dirImg + "menu_bg.png";
 var s_menu_labels = dirImg + "menu_labels.png";
 var s_menu_buttons = dirImg + "menu_buttons.png";
+var s_menu_buttons_pressed = dirImg + "menu_buttons_pressed.png";
 var s_menu_buttons_settings = dirImg + "menu_buttons_settings.png";
 
 //music
@@ -36,6 +37,7 @@ var g_resources = [
     {type:"image", src:s_game_bg},
     {type:"image", src:s_menu_bg},
     {type:"image", src:s_menu_buttons},
+    {type:"image", src:s_menu_buttons_pressed},
     {type:"image", src:s_menu_buttons_settings},
     {type:"image", src:s_menu_labels},
 
