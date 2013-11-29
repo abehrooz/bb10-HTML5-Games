@@ -1,70 +1,17 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html>
-	<head>
-		<script type="text/javascript">
-			/* Ensure that our viewport is scaled properly. */
-			(function () {
-				var meta = document.createElement("meta");
-				meta.setAttribute('name', 'viewport');
-				meta.setAttribute('content', 'initial-scale=' + (1.0 / window.devicePixelRatio) + ',user-scalable=no');
-				document.getElementsByTagName('head')[0].appendChild(meta);
-			}());
-		</script>
-		<link type="text/css" rel="stylesheet" href="css/styles.css" />
-	</head>
-	<body>
-		<div id="freewill"></div>
-        <div id="preventSleep" hidden="hidden">
-            <video id="preventSleepVideo" src="res/music/fish_frenzy_clip.m4v" loop="loop"></video>
-        </div>
-        <audio id="gameMusic" src="res/music/game_bg_GreenCats.mp3" loop="loop"></audio>
-        <!--<audio id="menuMusic" src="res/music/menu_bg_FogOfPeace.mp3" loop="loop" preload="true" autoplay="true"></audio>-->
-		<canvas id="ccCanvas"></canvas>
-		<script type="text/javascript" src="./js/webworks-1.0.2.9.js"></script>
-		<!--<script type="text/javascript" src="./js/webworks-1.0.4.5.js"></script>-->
-		<script type="text/javascript">
-			/* Once WebWorks is ready, we will begin our Cocos2d-HTML5 initailization. */
-			function onwebworksready() {
-				document.removeEventListener('webworksready', onwebworksready, false);
-
-                var MW = MW || {};
-				/* Create a new script to begin loading Cocos2d-HTML5. */
-				var script = document.createElement('script');
-				script.id = 'cocos2d-html5';	/* This ID is required. */
-				script.c = {
-					box2d:
-						false,					/* Should we load box2d.js? (true | false) */
-					engineDir:
-						'./cocos/cocos2d/',		/* Location of the cocos2d framework. */
-					appFiles: [
-                        './resources.js',
-                        './js/GameConfig.js',
-                        './js/Freewill.js',		/* Generic virtual controls. */
-                        './js/RailFactory.js',  /*Helper class to create random rails*/
-						'./js/GameOver.js',
-						'./js/PauseMenu.js',
-						'./js/MainMenu.js',
-						'./js/GameScene.js'	/* Our primary layer. */
-					]
-				};
-				script.src = script.c.engineDir + 'platform/jsloader.js';
-				document.body.appendChild(script);
-				/* Once the noted script completes, it will load and trigger main.js. */
-			}
-
-			/* Once the DOM is ready, we wait for WebWorks to be ready. */
-			function ondomcontentloaded() {
-				window.removeEventListener('DOMContentLoaded', ondomcontentloaded, false);
-				document.addEventListener('webworksready', onwebworksready, false);
-				/**
-				 * Uncomment the following line of code if testing without Ripple.
-				 */
-				//onwebworksready();
-			}
-
-			/* Wait for the DOM to be ready. */
-			window.addEventListener('DOMContentLoaded', ondomcontentloaded, false);
-
-		</script>
-	</body>
+<head>
+    <meta charset="utf-8">
+    <title>Cocos2d-HTML5 Test Cases</title>
+    <link type="text/css" rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<script src="js/webworks-1.0.4.7.js" type="text/javascript"></script>
+<canvas id="gameCanvas" width="768" height="1280"></canvas>
+<div id="preventSleep" hidden="hidden">
+    <video id="preventSleepVideo" src="res/music/fish_frenzy_clip.m4v" loop="loop"></video>
+</div>
+<audio id="gameMusic" src="res/music/game_bg_GreenCats.mp3" loop="loop"></audio>
+<script src="main-boot-html5.js"></script>
+</body>
 </html>

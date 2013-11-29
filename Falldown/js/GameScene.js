@@ -80,31 +80,6 @@ var GameLayer = cc.Layer.extend({
 //        this.pauseButton.setPosition(cc.p(720, winSize.height - 34));
 
 
-        /* Load freewill. */
-        this.freewill = new Freewill({
-            container: document.querySelector('#freewill')
-        });
-
-        this.freewill.pause = this.freewill.addJoystick({
-            imageBase: s_game_ball,						/* Irrelevant since we never see the Joystick. */
-            imagePad: s_game_ball,						/* Irrelevant since we never see the Joystick. */
-            fixed: true,														/* Joystick won't move. */
-            pos: [0.0, 0.0],													/* Irrelevant since we never see the Joystick. */
-            trigger: [0.0, 0.0, window.innerWidth, window.innerHeight],	/* The touch area that triggers this Joystick will be the left half of the screen. */
-            opacLow: 0.0,														/* Lowest opacity is 0; invisible. */
-            opacHigh: 0.0														/* Highest opacity is 0; invisible. */
-        });
-
-        this.freewill.pause.onTouchStart = function () {
-            if (_g.LayerStart.running) {
-                if (!_g.LayerStart.paused) {
-                    _g.LayerStart.onPause();
-                } else {
-//                    _g.LayerStart.onResume();
-                }
-            }
-
-		};
 
         /* Initialize our Web Worker. */
         this.physics = new Worker('./js/Box2dWebWorker.js');
@@ -118,16 +93,19 @@ var GameLayer = cc.Layer.extend({
 
         /* Load the scenery. */
         this.background = cc.Sprite.create(s_game_bg);
-//		this.background.setAnchorPoint(new cc.Point(0.0, 0.0));
         this.background.setPosition(new cc.Point(384.0, 640.0));
         this.addChild(this.background, 0);
 
+        var invisibleBackgoundItem = cc.MenuItemImage.create(s_menu_bg, s_menu_bg, this.onPause, this);
+        var menu = cc.Menu.create(invisibleBackgoundItem);
+        menu.setOpacity(0);
+        menu.setPosition(cc.p(384, 640));
+        this.addChild(menu, 0);
+
+
         /* Load the ball. */
         this.ball = cc.Sprite.create(s_game_ball);
-//		this.ball.setAnchorPoint(new cc.Point(0.5, 0.5));
-//		this.ball.setPosition(new cc.Point(384.0, 840.0));
         this.ball.j = [];
-        /* Will hold the impulse force acting on the ball. */
         this.addChild(this.ball, 2);
 
         /* Load the floors. */
@@ -312,7 +290,7 @@ var GameLayer = cc.Layer.extend({
     },
 
     onPause:function(){
-//        console.log("Pausing the game");
+        console.log("Pausing the game");
         this.physics.postMessage({
             msg:'pause'
         });
@@ -322,7 +300,7 @@ var GameLayer = cc.Layer.extend({
     },
 
     onResume:function(){
-//        console.log("Resuming the game");
+        console.log("Resuming the game");
         this.physics.postMessage({
             msg:'resume'
         });
@@ -338,5 +316,11 @@ var GameLayer = cc.Layer.extend({
             j:this.ball.j
         });
     }
+});
 
+var GameScene = cc.Scene.extend({
+    onEnter: function () {
+        this._super();
+        this.addChild(new GameLayer());
+    }
 });

@@ -1,40 +1,38 @@
-var ccApplication = cc.Application.extend({
-	ctor: function () {
-		this._super();
-		this.startScene = MainMenuScene;
+var cocos2dApp = cc.Application.extend({
+    config:document['ccConfig'],
+    ctor:function (scene) {
+        this._super();
+        this.startScene = scene;
+        cc.COCOS2D_DEBUG = this.config['COCOS2D_DEBUG'];
+        cc.initDebugSetting();
+        cc.setup(this.config['tag']);
+        cc.Loader.getInstance().onloading = function () {
+            cc.LoaderScene.getInstance().draw();
+        };
+        cc.Loader.getInstance().onload = function () {
+            cc.AppController.shareAppController().didFinishLaunchingWithOptions();
+        };
+        cc.Loader.getInstance().preload(g_ressources);
+    },
+    applicationDidFinishLaunching:function () {
+        // initialize director
+        var director = cc.Director.getInstance();
 
-		cc.COCOS2D_DEBUG = 0;	/* 0 = OFF, 1 = BASIC, 2 = FULL. */
-		cc.initDebugSetting();
+        // enable High Resource Mode(2x, such as iphone4) and maintains low resource on other devices.
+//     director->enableRetinaDisplay(true);
 
-		/* Initialize our primary <canvas>. */
-		cc.setup('ccCanvas', window.innerWidth, window.innerHeight);
-		document.querySelector('#Cocos2dGameContainer').style.overflow = 'hidden';
-		document.querySelector('#Cocos2dGameContainer').style.position = 'fixed';
-		document.querySelector('#ccCanvas').style.position = 'fixed';
+        // turn on display FPS
+        director.setDisplayStats(this.config['showFPS']);
 
-        cc.AudioEngine.getInstance().init();
+        // set FPS. the default value is 1.0/60 if you don't call this
+        director.setAnimationInterval(1.0 / this.config['frameRate']);
 
-		/* Display the default scene during load. */
-		cc.Loader.getInstance().onloading = function () {
-			cc.LoaderScene.getInstance().draw();
-		};
+        // create a scene. it's an autorelease object
 
-		/* Initiate application once loading is complete. */
-		cc.Loader.getInstance().onload = function () {
-			cc.AppController.shareAppController().didFinishLaunchingWithOptions();
-		};
+        // run
+        director.runWithScene(new this.startScene());
 
-		/* Initiate preloading; at minimum, this REQUIRES an [] argument. */
-		cc.Loader.getInstance().preload(g_resources);
-	},
-
-	applicationDidFinishLaunching: function () {
-		var director = cc.Director.getInstance();
-//		director.setDisplayStats(true); /* Show FPS information? */
-		director.runWithScene(new this.startScene());
-		return true;
-	}
+        return true;
+    }
 });
-
-/* Create our new application that we just defined. */
-var ccMain = new ccApplication();
+var myApp = new cocos2dApp(MainMenuLayer);

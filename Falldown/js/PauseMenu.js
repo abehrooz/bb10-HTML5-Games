@@ -8,7 +8,6 @@ var PauseLayer = cc.Layer.extend({
     },
     init:function () {
         this._super();
-        this._isTouchEnabled = true;
         _g.LayerPause = this;
         this._visible = false;
 
@@ -23,50 +22,32 @@ var PauseLayer = cc.Layer.extend({
 
 
         var resumeNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 840, 440, 140));
-        resumeNormal.setContentSize(new cc.size(440, 140));
-        var highScoresNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 140, 440, 140));
-        highScoresNormal.setContentSize(new cc.size(440, 140));
         var menuNormal = cc.Sprite.create(s_menu_buttons, cc.rect(0, 980, 440, 140));
-        menuNormal.setContentSize(new cc.size(440, 140));
-        var settingsNormal = cc.Sprite.create(s_menu_buttons_settings, cc.rect(0, 0, 440, 140));
-        settingsNormal.setContentSize(new cc.size(440, 140));
+        var settingsNormal = cc.Sprite.create(s_menu_buttons_settings, cc.rect(0, 5, 440, 140));
 
+        var resumePressed = cc.Sprite.create(s_menu_buttons_pressed, cc.rect(0, 840, 440, 140));
+        var menuPressed = cc.Sprite.create(s_menu_buttons_pressed, cc.rect(0, 980, 440, 140));
+        var settingsPressed = cc.Sprite.create(s_menu_buttons_settings, cc.rect(0, 5, 440, 140));
 
-        resumeNormal.setPosition(384, 700);
-        highScoresNormal.setPosition(384, 575);
-        menuNormal.setPosition(384, 450);
-        settingsNormal.setPosition(384, 329);
-
-        this.addChild(resumeNormal, 1);
-        this.addChild(highScoresNormal, 1);
-        this.addChild(menuNormal, 1);
-        this.addChild(settingsNormal, 1);
-
-        function spriteContainsPoint(sprite, touch) {
-            var x = touch.pageX;
-            var y = 1280 - touch.pageY;
-            var maxX = sprite.getPosition().x + sprite.getContentSize().width / 2;
-            var minX = sprite.getPosition().x - sprite.getContentSize().width / 2;
-            var maxY = sprite.getPosition().y + sprite.getContentSize().height / 2;
-            var minY = sprite.getPosition().y - sprite.getContentSize().height / 2;
-            return maxX >= x && x >= minX &&
-                maxY >= y && y >= minY;
-        }
-
-        window.document.addEventListener('touchstart', function (){
-            if (event.targetTouches.length == 1) {
-                var touch = event.targetTouches[0];
-                if (spriteContainsPoint(resumeNormal,touch)) {
-//                    window.document.removeEventListener('touchstart', arguments.callee, false);
-                    _g.LayerStart.onResume();
-                    _g.LayerPause.setVisible(false);
-                } else if (spriteContainsPoint(menuNormal,touch)) {
-                    window.document.removeEventListener('touchstart', arguments.callee, false);
-                    _g.LayerStart.onGameOver();
-                    cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,new MainMenuScene()));
-                }
-            }
-        }, false);
-
+        var resumeItem = cc.MenuItemSprite.create(resumeNormal, resumePressed, this.onResumeCallback, this);
+        var mainMenuItem = cc.MenuItemSprite.create(menuNormal, menuPressed, this.onMainMenuCallback, this);
+        var settingsItem = cc.MenuItemSprite.create(settingsNormal, settingsPressed, this.onSettingsCallback, this);
+        var menu = cc.Menu.create(resumeItem, mainMenuItem, settingsItem);
+        menu.alignItemsVerticallyWithPadding(-12)
+        menu.setPosition(cc.p(384, 540));
+        this.addChild(menu, 10);
+    },
+    onResumeCallback:function () {
+        console.log("onResumeCallback");
+        _g.LayerStart.onResume();
+        _g.LayerPause.setVisible(false);
+    },
+    onMainMenuCallback:function () {
+        console.log("onMainMenuCallback");
+        _g.LayerStart.onGameOver();
+        cc.Director.getInstance().replaceScene(cc.TransitionFade.create(1.2,new MainMenuScene()));
+    },
+    onSettingsCallback:function () {
+        console.log("onSettingsCallback");
     }
 });
