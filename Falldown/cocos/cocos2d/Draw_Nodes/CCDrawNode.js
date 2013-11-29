@@ -142,7 +142,7 @@ cc.DrawNode = cc.Node.extend({
 
             if (element.type === cc.DRAWNODE_TYPE_SEGMENT) {
                 context.strokeStyle = "rgba(" + (0|(element.color.r * 255)) + "," + (0|(element.color.g * 255)) + "," + (0|(element.color.b * 255)) + "," + element.color.a + ")";
-                context.lineWidth = element.radius;
+                context.lineWidth = element.radius * 2;
                 context.lineCap = "round";
                 cc.drawingUtil.drawLine(element.from, element.to);
             }
@@ -151,11 +151,11 @@ cc.DrawNode = cc.Node.extend({
                 context.fillStyle = "rgba(" + (0|(element.fillColor.r * 255)) + "," + (0|(element.fillColor.g * 255)) + ","
                     + (0|(element.fillColor.b * 255)) + "," + element.fillColor.a + ")";
                 cc.drawingUtil.drawPoly(element.verts, element.count, false, true);
-                context.lineWidth = element.borderWidth;
+                context.lineWidth = element.borderWidth * 2;
                 context.lineCap = "round";
                 context.strokeStyle = "rgba(" + (0|(element.borderColor.r * 255)) + "," + (0|(element.borderColor.g * 255)) + ","
                     + (0|(element.borderColor.b * 255)) + "," + element.borderColor.a + ")";
-                cc.drawingUtil.drawPoly(element.verts, element.count, false, false);
+                cc.drawingUtil.drawPoly(element.verts, element.count, true, false);
             }
         }
 
@@ -275,10 +275,10 @@ cc.DrawNode = cc.Node.extend({
     },
 
     /** draw a polygon with a fill color and line color */
-    drawPolyWithVerts:function (verts, count, fillColor, width, borderColor) {
+    drawPoly:function (verts, fillColor, width, borderColor) {
         var element = new cc._DrawNodeElement(cc.DRAWNODE_TYPE_POLY);
-        element.verts = cc.DrawNode.convertVerts(verts);
-        element.count = count;
+        element.verts = verts;
+        element.count = verts.length;
         element.fillColor = fillColor;
         element.borderWidth = width;
         element.borderColor = borderColor;
@@ -395,10 +395,3 @@ cc._DrawNodeElement = function (type) {
 cc.DRAWNODE_TYPE_DOT = 0;
 cc.DRAWNODE_TYPE_SEGMENT = 1;
 cc.DRAWNODE_TYPE_POLY = 2;
-cc.DrawNode.convertVerts = function (verts) {
-    var ret = [];
-    for (var i = 0; i < verts.length / 2; i++) {
-        ret[i] = {x:verts[i * 2], y:verts[i * 2 + 1]};
-    }
-    return ret;
-};
